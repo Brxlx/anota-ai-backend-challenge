@@ -1,3 +1,5 @@
+import { makeCategoryFactory } from 'test/factories/make-category.factory';
+
 import { ID } from '@/core/entities/id';
 
 import { Category } from './category';
@@ -26,5 +28,11 @@ describe('[Category]', () => {
     });
 
     expect(newCategory.createdAt).toEqual(specificDate);
+  });
+  it('should be able to create a new category using the factory', () => {
+    const newCategory = makeCategoryFactory({ ownerId: new ID('owner-1') });
+
+    expect(newCategory).toBeInstanceOf(Category);
+    expect(newCategory.ownerId.toString()).toEqual('owner-1');
   });
 });
