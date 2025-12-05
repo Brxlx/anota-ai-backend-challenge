@@ -2,7 +2,7 @@ import { ID } from '@/core/entities/id';
 
 import { Category } from './category';
 
-describe('[Category', () => {
+describe('[Category]', () => {
   it('should be able to create a new category', () => {
     const newCategory = Category.create({
       title: 'test',

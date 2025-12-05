@@ -3,7 +3,7 @@ import { ID } from '@/core/entities/id';
 import { Product } from './product';
 import { Price } from './value-objects/price';
 
-describe('[Product', () => {
+describe('[Product]', () => {
   it('should be able to create a new product', () => {
     const newProduct = Product.create({
       title: 'test',
