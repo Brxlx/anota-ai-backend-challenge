@@ -33,8 +33,6 @@ describe('[Product]', () => {
       category: categoryId,
     });
 
-    console.log(newProduct);
-
     expect(newProduct).toBeInstanceOf(Product);
     expect(newProduct.category.toString()).toEqual('category-1');
     expect(newProduct.ownerId.toString()).toEqual('user-1');
