@@ -26,8 +26,8 @@ export class Category extends BaseEntity<CategoryProps> {
     return this.props.createdAt;
   }
 
-  static isValidOwnerId(ownerId: string) {
-    return new ID(ownerId).isValid();
+  static isValidId(id: string) {
+    return new ID(id).isValid();
   }
 
   static create(props: Optional<CategoryProps, 'createdAt'>, id?: ID) {

@@ -21,7 +21,7 @@ export class CreateCategoryUseCase {
     description,
     ownerId,
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
-    if (!Category.isValidOwnerId(ownerId)) return left(new InvalidOwnerIdError());
+    if (!Category.isValidId(ownerId)) return left(new InvalidOwnerIdError());
 
     const category = Category.create({
       title,
