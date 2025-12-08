@@ -12,8 +12,7 @@ describe('[Product]', () => {
       description: 'This is the test description',
       ownerId: new ID('user1'),
       price: new Price({ amount: 1.99 }),
-      /* TODO: Criar Factory para Category */
-      category: new ID(),
+      category: new ID('category-1'),
     });
 
     expect(newProduct).toBeInstanceOf(Product);
@@ -21,6 +20,7 @@ describe('[Product]', () => {
     expect(newProduct.description).toEqual('This is the test description');
     expect(newProduct.ownerId.toString()).toEqual('user1');
     expect(newProduct.price.amount).toEqual(1.99);
+    expect(newProduct.category.toString()).toEqual('category-1');
   });
 
   it('should be able to create a new product with category with factory', () => {

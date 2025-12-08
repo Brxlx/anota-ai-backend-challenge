@@ -7,6 +7,7 @@ export interface CategoryProps {
   description: string;
   ownerId: ID;
   createdAt: Date;
+  updatedAt?: Date | null;
 }
 
 export class Category extends BaseEntity<CategoryProps> {
@@ -26,8 +27,32 @@ export class Category extends BaseEntity<CategoryProps> {
     return this.props.createdAt;
   }
 
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
+
   static isValidId(id: string) {
     return new ID(id).isValid();
+  }
+
+  public setTitle(title: string) {
+    this.props.title = title;
+    this.touch();
+  }
+
+  public setDescription(description: string) {
+    this.props.description = description;
+    this.touch();
+  }
+
+  public setOwnerId(ownerId: ID) {
+    this.props.ownerId = ownerId;
+    this.touch();
+  }
+
+  public touch() {
+    // Adiciona um delay de 3 segundos à data atual
+    this.props.updatedAt = new Date(Date.now() + 3000);
   }
 
   static create(props: Optional<CategoryProps, 'createdAt'>, id?: ID) {
