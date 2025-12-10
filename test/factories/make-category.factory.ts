@@ -6,7 +6,7 @@ import { Category } from '@/domain/enterprise/entities/category';
 interface MakeCategoryProps {
   title?: string;
   description?: string;
-  ownerId?: ID;
+  ownerId?: string;
 }
 
 export function makeCategoryFactory(props: MakeCategoryProps = {}, id?: ID) {
@@ -14,7 +14,7 @@ export function makeCategoryFactory(props: MakeCategoryProps = {}, id?: ID) {
     {
       title: props.title ?? faker.commerce.product(),
       description: props.description ?? faker.commerce.productDescription(),
-      ownerId: props.ownerId ?? new ID(),
+      ownerId: new ID(props.ownerId),
     },
     id,
   );

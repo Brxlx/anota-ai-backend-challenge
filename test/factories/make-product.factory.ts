@@ -7,9 +7,9 @@ import { Price } from '@/domain/enterprise/entities/value-objects/price';
 interface MakeProductProps {
   title?: string;
   description?: string;
-  ownerId?: ID;
-  price?: Price;
-  category?: ID;
+  ownerId?: string;
+  price?: number;
+  category?: string;
 }
 
 export function makeProductFactory(props: MakeProductProps = {}, id?: ID) {
@@ -17,11 +17,11 @@ export function makeProductFactory(props: MakeProductProps = {}, id?: ID) {
     {
       title: props.title ?? faker.commerce.product(),
       description: props.description ?? faker.commerce.productDescription(),
-      ownerId: props.ownerId ?? new ID(),
-      category: props.category ?? new ID(faker.commerce.product().toLocaleLowerCase()),
-      price:
-        props.price ??
-        Price.createBRL(Number(faker.finance.amount({ autoFormat: true, min: 1.0, max: 100 }))),
+      ownerId: new ID(props.ownerId),
+      category: new ID(props.category ?? faker.commerce.product().toLocaleLowerCase()),
+      price: Price.createBRL(
+        props.price ?? Number(faker.finance.amount({ autoFormat: true, min: 1.0, max: 100 })),
+      ),
     },
     id,
   );

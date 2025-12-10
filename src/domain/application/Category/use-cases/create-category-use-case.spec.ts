@@ -1,8 +1,6 @@
 import { makeCategoryFactory } from 'test/factories/make-category.factory';
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories.repository';
 
-import { ID } from '@/core/entities/id';
-
 import { InvalidOwnerIdError } from '../errors/invalid-owner-id.error';
 import { CreateCategoryUseCase } from './create-category-use-case';
 
@@ -47,7 +45,7 @@ suite('[Category][UseCase]', () => {
       const newCategory = makeCategoryFactory({
         title: 'Jacket',
         description: 'A nice jacket',
-        ownerId: new ID('121d446809ef'),
+        ownerId: '121d446809ef',
       });
 
       const result = await sut.execute({

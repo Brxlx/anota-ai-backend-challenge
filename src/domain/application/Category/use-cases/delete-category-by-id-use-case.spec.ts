@@ -48,13 +48,13 @@ suite('[Category][UseCase]', () => {
         {
           title: 'Jacket',
           description: 'A nice jacket',
-          ownerId: new ID('121d446809ef'),
+          ownerId: '121d446809ef',
         },
         new ID('121d749809ed'),
       );
 
       const result = await sut.execute({
-        id: new ID('non-existing-id').toValue(),
+        id: 'non-existing-id',
       });
 
       expect(result.isLeft()).toBeTruthy();

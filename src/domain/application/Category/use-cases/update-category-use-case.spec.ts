@@ -76,10 +76,12 @@ suite('[Category][UseCase]', () => {
       const newCategory = makeCategoryFactory({
         title: 'Jacket',
         description: 'A nice jacket',
-        ownerId: new ID('121d446809ef'),
+        ownerId: '121d446809ef',
       });
 
       await categoriesRepository.create(newCategory);
+
+      console.log(newCategory);
 
       const result = await sut.execute(newCategory.id.toValue(), {
         ownerId: newCategory.ownerId.toValue(),

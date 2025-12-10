@@ -3,6 +3,7 @@ import { makeProductFactory } from 'test/factories/make-product.factory';
 import { ID } from '@/core/entities/id';
 
 import { Product } from './product';
+import { NegativeAmountError } from './value-objects/errors/negtive-amount.error';
 import { Price } from './value-objects/price';
 
 describe('[Product]', () => {
@@ -11,9 +12,10 @@ describe('[Product]', () => {
       title: 'test',
       description: 'This is the test description',
       ownerId: new ID('user1'),
-      price: new Price({ amount: 1.99 }),
+      price: Price.createBRL(1.99),
       category: new ID('category-1'),
     });
+    console.log(newProduct);
 
     expect(newProduct).toBeInstanceOf(Product);
     expect(newProduct.title).toEqual('test');
@@ -24,12 +26,12 @@ describe('[Product]', () => {
   });
 
   it('should be able to create a new product with category with factory', () => {
-    const categoryId = new ID('category-1');
+    const categoryId = 'category-1';
     const amount = 1.99;
 
     const newProduct = makeProductFactory({
-      ownerId: new ID('user-1'),
-      price: new Price({ amount }),
+      ownerId: 'user-1',
+      price: amount,
       category: categoryId,
     });
 
@@ -37,5 +39,15 @@ describe('[Product]', () => {
     expect(newProduct.category.toString()).toEqual('category-1');
     expect(newProduct.ownerId.toString()).toEqual('user-1');
     expect(newProduct.price.amount).toEqual(amount);
+  });
+
+  it('should not be able to create a new product with invalid price', () => {
+    expect(() => {
+      makeProductFactory({
+        ownerId: 'user-1',
+        price: -1.99,
+        category: 'category-1',
+      });
+    }).toThrowError(NegativeAmountError);
   });
 });
