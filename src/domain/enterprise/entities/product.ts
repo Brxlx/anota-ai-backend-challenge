@@ -58,8 +58,8 @@ export class Product extends BaseEntity<ProductProps> {
     this.touch();
   }
 
-  public setPrice(price: Price) {
-    this.props.price = price;
+  public setPrice(price: number) {
+    this.props.price = Price.createBRL(price);
     this.touch();
   }
 
@@ -68,8 +68,8 @@ export class Product extends BaseEntity<ProductProps> {
     this.touch();
   }
 
-  public setCategory(category: ID) {
-    this.props.category = category;
+  public setCategory(category: string) {
+    this.props.category = new ID(category);
     this.touch();
   }
 
