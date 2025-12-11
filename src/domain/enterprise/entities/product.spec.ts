@@ -15,7 +15,6 @@ describe('[Product]', () => {
       price: Price.createBRL(1.99),
       category: new ID('category-1'),
     });
-    console.log(newProduct);
 
     expect(newProduct).toBeInstanceOf(Product);
     expect(newProduct.title).toEqual('test');

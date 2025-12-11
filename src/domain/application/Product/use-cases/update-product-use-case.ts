@@ -2,8 +2,8 @@ import { ID } from '@/core/entities/id';
 import { Either, left, right } from '@/core/types/either';
 import { Product } from '@/domain/enterprise/entities/product';
 
-import { InvalidOwnerIdError } from '../errors/invalid-owner-id.error';
 import { InvalidProductIdError } from '../errors/invalid-product-id.error';
+import { InvalidProductOwnerIdError } from '../errors/invalid-product-owner-id.error';
 import { ProductsRepository } from '../repositories/products.repository';
 
 interface UpdateProductUseCaseRequest {
@@ -14,7 +14,10 @@ interface UpdateProductUseCaseRequest {
   category?: string;
 }
 
-type UpdateProductUseCaseResponse = Either<InvalidProductIdError | InvalidOwnerIdError, { product: Product }>;
+type UpdateProductUseCaseResponse = Either<
+  InvalidProductIdError | InvalidProductOwnerIdError,
+  { product: Product }
+>;
 
 export class UpdateProductUseCase {
   constructor(private readonly productsRepository: ProductsRepository) {}
@@ -27,7 +30,7 @@ export class UpdateProductUseCase {
 
     if (!product) return left(new InvalidProductIdError());
 
-    if (ownerId && !Product.isValidId(ownerId)) return left(new InvalidOwnerIdError());
+    if (ownerId && !Product.isValidId(ownerId)) return left(new InvalidProductOwnerIdError());
 
     if (title !== undefined) product.setTitle(title);
 

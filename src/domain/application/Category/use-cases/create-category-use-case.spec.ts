@@ -1,7 +1,7 @@
 import { makeCategoryFactory } from 'test/factories/make-category.factory';
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories.repository';
 
-import { InvalidOwnerIdError } from '../errors/invalid-owner-id.error';
+import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { CreateCategoryUseCase } from './create-category-use-case';
 
 let categoriesRepository: InMemoryCategoriesRepository;
@@ -57,7 +57,7 @@ suite('[Category][UseCase]', () => {
       expect(result.isLeft()).toBeTruthy();
       assert(result.isLeft()); // TypeScript now knows that result is Left
 
-      expect(result.value).toBeInstanceOf(InvalidOwnerIdError);
+      expect(result.value).toBeInstanceOf(InvalidCategoryOwnerIdError);
     });
   });
 });

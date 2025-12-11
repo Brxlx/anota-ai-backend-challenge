@@ -3,7 +3,7 @@ import { Either, left, right } from '@/core/types/either';
 import { Category } from '@/domain/enterprise/entities/category';
 
 import { InvalidCategoryIdError } from '../errors/invalid-category-id.error';
-import { InvalidOwnerIdError } from '../errors/invalid-owner-id.error';
+import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { CategoriesRepository } from '../repositories/categories.repository';
 
 interface UpdateCategoryUseCaseRequest {
@@ -13,7 +13,7 @@ interface UpdateCategoryUseCaseRequest {
 }
 
 type UpdateCategoryUseCaseResponse = Either<
-  InvalidCategoryIdError | InvalidOwnerIdError,
+  InvalidCategoryIdError | InvalidCategoryOwnerIdError,
   { category: Category }
 >;
 
@@ -28,7 +28,7 @@ export class UpdateCategoryUseCase {
 
     if (!category) return left(new InvalidCategoryIdError());
 
-    if (ownerId && !Category.isValidId(ownerId)) return left(new InvalidOwnerIdError());
+    if (ownerId && !Category.isValidId(ownerId)) return left(new InvalidCategoryOwnerIdError());
 
     if (title !== undefined) category.setTitle(title);
 

@@ -3,8 +3,8 @@ import { Either, left, right } from '@/core/types/either';
 import { Product } from '@/domain/enterprise/entities/product';
 import { Price } from '@/domain/enterprise/entities/value-objects/price';
 
-import { InvalidOwnerIdError } from '../../Category/errors/invalid-owner-id.error';
 import { InvalidProductIdError } from '../errors/invalid-product-id.error';
+import { InvalidProductOwnerIdError } from '../errors/invalid-product-owner-id.error';
 import { ProductsRepository } from '../repositories/products.repository';
 
 interface CreateProductUseCaseRequest {
@@ -27,7 +27,7 @@ export class CreateProductUseCase {
     price,
     category,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
-    if (!Product.isValidId(ownerId)) return left(new InvalidOwnerIdError());
+    if (!Product.isValidId(ownerId)) return left(new InvalidProductOwnerIdError());
 
     const product = Product.create({
       title,

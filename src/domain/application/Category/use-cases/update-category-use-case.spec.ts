@@ -3,7 +3,7 @@ import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-catego
 
 import { ID } from '@/core/entities/id';
 
-import { InvalidOwnerIdError } from '../errors/invalid-owner-id.error';
+import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { UpdateCategoryUseCase } from './update-category-use-case';
 
 let categoriesRepository: InMemoryCategoriesRepository;
@@ -81,8 +81,6 @@ suite('[Category][UseCase]', () => {
 
       await categoriesRepository.create(newCategory);
 
-      console.log(newCategory);
-
       const result = await sut.execute(newCategory.id.toValue(), {
         ownerId: newCategory.ownerId.toValue(),
       });
@@ -90,7 +88,7 @@ suite('[Category][UseCase]', () => {
       expect(result.isLeft()).toBeTruthy();
       assert(result.isLeft()); // TypeScript now knows that result is Left
 
-      expect(result.value).toBeInstanceOf(InvalidOwnerIdError);
+      expect(result.value).toBeInstanceOf(InvalidCategoryOwnerIdError);
     });
   });
 });

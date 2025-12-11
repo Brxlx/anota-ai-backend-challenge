@@ -2,7 +2,7 @@ import { ID } from '@/core/entities/id';
 import { Either, left, right } from '@/core/types/either';
 import { Category } from '@/domain/enterprise/entities/category';
 
-import { InvalidOwnerIdError } from '../errors/invalid-owner-id.error';
+import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { CategoriesRepository } from '../repositories/categories.repository';
 
 interface CreateCategoryUseCaseRequest {
@@ -11,7 +11,7 @@ interface CreateCategoryUseCaseRequest {
   ownerId: string;
 }
 
-type CreateCategoryUseCaseResponse = Either<InvalidOwnerIdError, { category: Category }>;
+type CreateCategoryUseCaseResponse = Either<InvalidCategoryOwnerIdError, { category: Category }>;
 
 export class CreateCategoryUseCase {
   constructor(private readonly categoriesRepository: CategoriesRepository) {}
@@ -21,7 +21,7 @@ export class CreateCategoryUseCase {
     description,
     ownerId,
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
-    if (!Category.isValidId(ownerId)) return left(new InvalidOwnerIdError());
+    if (!Category.isValidId(ownerId)) return left(new InvalidCategoryOwnerIdError());
 
     const category = Category.create({
       title,
