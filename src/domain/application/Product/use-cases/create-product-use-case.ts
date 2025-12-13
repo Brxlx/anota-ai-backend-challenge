@@ -79,8 +79,8 @@ export class CreateProductUseCase {
   private async sendToQueue(topic: string, message: string): Promise<Either<SendToQueueError, boolean>> {
     try {
       // throw new Error('teste de erro na fila');
-      const { result } = await this.queue.produce(topic, message);
-      return result ? right(true) : left(new SendToQueueError());
+      const { value } = await this.queue.produce(topic, message);
+      return value ? right(true) : left(new SendToQueueError());
     } catch {
       return left(new SendToQueueError());
     }

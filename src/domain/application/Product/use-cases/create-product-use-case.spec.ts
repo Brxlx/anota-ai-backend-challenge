@@ -4,7 +4,10 @@ import { FakeQueue } from 'test/gateways/queue/fake-queue';
 import { FakeStorage } from 'test/gateways/storage/fake-storage';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products.repository';
 
+import { DomainEvents } from '../../shared/events/domain-events';
 import { InvalidProductOwnerIdError } from '../errors/invalid-product-owner-id.error';
+import { SendToQueueError } from '../errors/send-to-queue.error';
+import { SendToStorageError } from '../errors/send-to-storage.error';
 import { CreateProductUseCase } from './create-product-use-case';
 
 // let env: FakeEnv;
@@ -29,6 +32,8 @@ suite('[Product][UseCase]', () => {
   });
   describe('Create Product', () => {
     it('should be able to create a new Product', async () => {
+      const spy = vi.spyOn(DomainEvents, 'dispatchEventsForAggregate');
+
       const newProduct = makeProductFactory({
         title: 'Jacket',
         description: 'A nice jacket',
@@ -59,6 +64,7 @@ suite('[Product][UseCase]', () => {
       expect(productsRepository.items).toHaveLength(1);
       expect(messageSentToQueue).toBeDefined();
       expect(storageValue).toBeDefined();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should throw error creating Category with ivalid ownerId', async () => {
@@ -80,6 +86,56 @@ suite('[Product][UseCase]', () => {
       assert(result.isLeft()); // TypeScript now knows that result is Left
 
       expect(result.value).toBeInstanceOf(InvalidProductOwnerIdError);
+    });
+
+    it('should throw error if queue fails', async () => {
+      const newProduct = makeProductFactory({
+        title: 'Jacket',
+        description: 'A nice jacket',
+      });
+
+      // Simula falha na fila
+      vi.spyOn(queue, 'produce').mockImplementationOnce(() => {
+        throw new SendToQueueError();
+      });
+
+      const result = await sut.execute({
+        title: newProduct.title,
+        description: newProduct.description,
+        ownerId: newProduct.ownerId.toValue(),
+        price: newProduct.price.amount,
+        category: newProduct.category.toString(),
+      });
+
+      expect(result.isLeft()).toBeTruthy();
+      assert(result.isLeft()); // TypeScript now knows that result is Left
+
+      expect(result.value).toBeInstanceOf(SendToQueueError);
+    });
+
+    it('should throw error if storage fails', async () => {
+      const newProduct = makeProductFactory({
+        title: 'Jacket',
+        description: 'A nice jacket',
+      });
+
+      // Simula falha no storage
+      vi.spyOn(storage, 'save').mockImplementationOnce(() => {
+        throw new Error('Storage error');
+      });
+
+      const result = await sut.execute({
+        title: newProduct.title,
+        description: newProduct.description,
+        ownerId: newProduct.ownerId.toValue(),
+        price: newProduct.price.amount,
+        category: newProduct.category.toString(),
+      });
+
+      expect(result.isLeft()).toBeTruthy();
+      assert(result.isLeft()); // TypeScript now knows that result is Left
+
+      expect(result.value).toBeInstanceOf(SendToStorageError);
     });
   });
 });
