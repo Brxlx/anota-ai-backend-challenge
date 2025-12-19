@@ -1,4 +1,5 @@
 import { makeProductFactory } from 'test/factories/make-product.factory';
+import { FakeQueue } from 'test/gateways/queue/fake-queue';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products.repository';
 
 import { ID } from '@/core/entities/id';
@@ -7,6 +8,7 @@ import { InvalidProductIdError } from '../errors/invalid-product-id.error';
 import { DeleteProductByIdUseCase } from './delete-product-by-id-use-case';
 
 let productsRepository: InMemoryProductsRepository;
+let queue: FakeQueue;
 
 /**
  * System Under Test (SUT)
@@ -19,7 +21,8 @@ suite('[Category][UseCase]', () => {
    */
   beforeEach(() => {
     productsRepository = new InMemoryProductsRepository();
-    sut = new DeleteProductByIdUseCase(productsRepository);
+    queue = new FakeQueue();
+    sut = new DeleteProductByIdUseCase(productsRepository, queue);
   });
   describe('Delete Category by ID', () => {
     it('should be able to delete a category by id', async () => {
@@ -31,7 +34,15 @@ suite('[Category][UseCase]', () => {
 
       await productsRepository.create(newProduct);
 
-      expect(productsRepository.items).toHaveLength(1);
+      const anotherProduct = makeProductFactory({
+        title: 'Pen',
+        description: 'A simple pen',
+        price: 2.99,
+      });
+
+      await productsRepository.create(anotherProduct);
+
+      expect(productsRepository.items).toHaveLength(2);
 
       const result = await sut.execute({
         id: newProduct.id.toValue(),
@@ -40,8 +51,8 @@ suite('[Category][UseCase]', () => {
       expect(result.isRight()).toBeTruthy();
       assert(result.isRight()); // TypeScript now knows that result is Right
 
-      expect(result.value).toBeNull();
-      expect(productsRepository.items).toHaveLength(0);
+      expect(result.value).not.toBeNull();
+      expect(productsRepository.items).toHaveLength(1);
     });
 
     it('should throw error finding a category with invalid id', async () => {

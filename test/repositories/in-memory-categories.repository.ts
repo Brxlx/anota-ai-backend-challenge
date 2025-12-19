@@ -3,6 +3,9 @@ import { CategoriesRepository } from '@/domain/application/Category/repositories
 import { Category } from '@/domain/enterprise/entities/category';
 
 export class InMemoryCategoriesRepository implements CategoriesRepository {
+  async findAll(): Promise<Category[]> {
+    return this.items;
+  }
   public items: Category[] = [];
 
   async findById(id: string): Promise<Category | null> {

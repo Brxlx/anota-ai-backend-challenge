@@ -121,7 +121,7 @@ suite('[Product][UseCase]', () => {
 
       // Simula falha no storage
       vi.spyOn(storage, 'save').mockImplementationOnce(() => {
-        throw new Error('Storage error');
+        throw new SendToStorageError();
       });
 
       const result = await sut.execute({

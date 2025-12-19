@@ -3,6 +3,9 @@ import { ProductsRepository } from '@/domain/application/Product/repositories/pr
 import { Product } from '@/domain/enterprise/entities/product';
 
 export class InMemoryProductsRepository implements ProductsRepository {
+  async findAll(): Promise<Product[]> {
+    return this.items;
+  }
   public items: Product[] = [];
 
   async findById(id: string): Promise<Product | null> {

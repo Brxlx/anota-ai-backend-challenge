@@ -30,7 +30,14 @@ suite('[Category][UseCase]', () => {
 
       await categoriesRepository.create(newCategory);
 
-      expect(categoriesRepository.items).toHaveLength(1);
+      const anotherCategory = makeCategoryFactory({
+        title: 'Games',
+        description: 'The infinite world of gaming',
+      });
+
+      await categoriesRepository.create(anotherCategory);
+
+      expect(categoriesRepository.items).toHaveLength(2);
 
       const result = await sut.execute({
         id: newCategory.id.toValue(),
@@ -39,8 +46,8 @@ suite('[Category][UseCase]', () => {
       expect(result.isRight()).toBeTruthy();
       assert(result.isRight()); // TypeScript now knows that result is Right
 
-      expect(result.value).toBeNull();
-      expect(categoriesRepository.items).toHaveLength(0);
+      expect(result.value).not.toBeNull();
+      expect(categoriesRepository.items).toHaveLength(1);
     });
 
     it('should throw error finding a category with invalid id', async () => {

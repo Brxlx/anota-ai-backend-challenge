@@ -26,24 +26,40 @@ export class UpdateProductUseCase {
     id: string,
     { title, description, ownerId, price, category }: UpdateProductUseCaseRequest,
   ): Promise<UpdateProductUseCaseResponse> {
-    const product = await this.productsRepository.findById(id);
+    if (ownerId && !this.isValidOwnerId(ownerId)) return left(new InvalidProductOwnerIdError());
 
+    const product = await this.productsRepository.findById(id);
     if (!product) return left(new InvalidProductIdError());
 
-    if (ownerId && !Product.isValidId(ownerId)) return left(new InvalidProductOwnerIdError());
+    const updatedProduct = this.validateRequestBody(
+      { title, description, ownerId, price, category },
+      product,
+    );
 
-    if (title !== undefined) product.setTitle(title);
+    await this.productsRepository.update(updatedProduct);
 
-    if (description !== undefined) product.setDescription(description);
+    return right({ product: updatedProduct });
+  }
 
-    if (ownerId !== undefined) product.setOwnerId(new ID(ownerId));
+  private isValidOwnerId(ownerId: string): boolean {
+    return Product.isValidId(ownerId);
+  }
 
-    if (price !== undefined) product.setPrice(price);
+  private isValidProductId(productId: string): boolean {
+    return Product.isValidId(productId);
+  }
 
-    if (category !== undefined) product.setCategory(category);
+  private validateRequestBody(request: UpdateProductUseCaseRequest, product: Product): Product {
+    if (request.title !== undefined) product.setTitle(request.title);
 
-    await this.productsRepository.update(product);
+    if (request.description !== undefined) product.setDescription(request.description);
 
-    return right({ product });
+    if (request.ownerId !== undefined) product.setOwnerId(new ID(request.ownerId));
+
+    if (request.price !== undefined) product.setPrice(request.price);
+
+    if (request.category !== undefined) product.setCategory(request.category);
+
+    return product;
   }
 }

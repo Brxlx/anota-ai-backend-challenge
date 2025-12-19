@@ -8,7 +8,7 @@ interface DeleteCategoryUseCaseRequest {
   id: string;
 }
 
-type DeleteCategoryUseCaseResponse = Either<InvalidCategoryIdError, null>;
+type DeleteCategoryUseCaseResponse = Either<InvalidCategoryIdError, Category[]>;
 
 export class DeleteCategoryByIdUseCase {
   constructor(private readonly categoriesRepository: CategoriesRepository) {}
@@ -18,6 +18,8 @@ export class DeleteCategoryByIdUseCase {
 
     await this.categoriesRepository.delete(id);
 
-    return right(null);
+    const updatedCategories = await this.categoriesRepository.findAll();
+
+    return right(updatedCategories);
   }
 }

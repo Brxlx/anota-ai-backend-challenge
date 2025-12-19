@@ -73,6 +73,7 @@ export class CreateProductUseCase {
       price: product.price.amount,
       categoryId: product.category.toString(),
       createdAt: product.createdAt,
+      type: 'PRODUCT',
     });
   }
 
