@@ -3,35 +3,34 @@ import { ProductsRepository } from '@/domain/application/Product/repositories/pr
 import { Product } from '@/domain/enterprise/entities/product';
 
 export class InMemoryProductsRepository implements ProductsRepository {
+  // public items: Product[] = [];
+  public items = new Map<string, Product>();
+
   async findAll(): Promise<Product[]> {
-    return this.items;
+    return Array.from(this.items.values());
   }
-  public items: Product[] = [];
 
   async findById(id: string): Promise<Product | null> {
-    const product = this.items.find((item) => item.id.toString() === id);
+    const product = this.items.get(id);
 
     if (!product) return null;
 
     return product;
   }
+
   async create(product: Product): Promise<Product> {
-    this.items.push(product);
+    this.items.set(product.id.toString(), product);
 
     return product;
   }
   async update(product: Product): Promise<void> {
-    const index = this.items.findIndex((item) => item.id.toString() === product.id.toString());
+    const id = product.id.toString();
 
-    if (index >= 0) {
-      this.items[index] = product;
+    if (this.items.has(id)) {
+      this.items.set(id, product);
     }
   }
   async delete(productId: string): Promise<void> {
-    const index = this.items.findIndex((item) => item.id.toString() === productId);
-
-    if (index >= 0) {
-      this.items.splice(index, 1);
-    }
+    this.items.delete(productId);
   }
 }

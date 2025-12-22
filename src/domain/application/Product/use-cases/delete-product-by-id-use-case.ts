@@ -28,9 +28,7 @@ export class DeleteProductByIdUseCase {
 
     const updatedProducts = await this.productsRepository.findAll();
 
-    console.log(updatedProducts);
-
-    // await this.queue.produce('catalog-emit', this.buildProductMessage(findInDb));
+    await this.queue.produce('catalog-emit', this.buildProductMessage(findInDb));
 
     return right(updatedProducts);
   }
