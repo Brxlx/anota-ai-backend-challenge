@@ -2,6 +2,9 @@ import { ID } from '@/core/entities/id';
 import { Either, left, right } from '@/core/types/either';
 import { Product } from '@/domain/enterprise/entities/product';
 
+import { Queue } from '../../shared/gateways/queue.gateway';
+import { Storage } from '../../shared/gateways/storage.gateway';
+import { GatewayUtils } from '../../shared/gateways/utils/gateway.utils';
 import { InvalidProductIdError } from '../errors/invalid-product-id.error';
 import { InvalidProductOwnerIdError } from '../errors/invalid-product-owner-id.error';
 import { ProductsRepository } from '../repositories/products.repository';
@@ -20,7 +23,11 @@ type UpdateProductUseCaseResponse = Either<
 >;
 
 export class UpdateProductUseCase {
-  constructor(private readonly productsRepository: ProductsRepository) {}
+  constructor(
+    private readonly productsRepository: ProductsRepository,
+    private readonly queue: Queue,
+    private readonly storage: Storage,
+  ) {}
 
   async execute(
     id: string,
@@ -37,6 +44,12 @@ export class UpdateProductUseCase {
     );
 
     await this.productsRepository.update(updatedProduct);
+
+    // Send to queue
+    await GatewayUtils.saveProductMessageToQueue(this.queue, 'catalog-emit', updatedProduct);
+
+    // Save to storage
+    await GatewayUtils.saveProductMessageToStorage(this.storage, 'catalog-emit', updatedProduct);
 
     return right({ product: updatedProduct });
   }

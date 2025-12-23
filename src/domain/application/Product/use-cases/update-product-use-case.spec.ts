@@ -1,4 +1,6 @@
 import { makeProductFactory } from 'test/factories/make-product.factory';
+import { FakeQueue } from 'test/gateways/queue/fake-queue';
+import { FakeStorage } from 'test/gateways/storage/fake-storage';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products.repository';
 
 import { ID } from '@/core/entities/id';
@@ -12,6 +14,8 @@ let productsRepository: InMemoryProductsRepository;
  * System Under Test (SUT)
  */
 let sut: UpdateProductUseCase;
+let queue: FakeQueue;
+let storage: FakeStorage;
 
 suite('[Product][UseCase]', () => {
   /*
@@ -19,7 +23,9 @@ suite('[Product][UseCase]', () => {
    */
   beforeEach(() => {
     productsRepository = new InMemoryProductsRepository();
-    sut = new UpdateProductUseCase(productsRepository);
+    queue = new FakeQueue();
+    storage = new FakeStorage();
+    sut = new UpdateProductUseCase(productsRepository, queue, storage);
   });
   describe('Update Product', () => {
     it('should be able to update title and description from Product', async () => {

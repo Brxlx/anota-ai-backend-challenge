@@ -2,6 +2,9 @@ import { ID } from '@/core/entities/id';
 import { Either, left, right } from '@/core/types/either';
 import { Category } from '@/domain/enterprise/entities/category';
 
+import { Queue } from '../../shared/gateways/queue.gateway';
+import { Storage } from '../../shared/gateways/storage.gateway';
+import { GatewayUtils } from '../../shared/gateways/utils/gateway.utils';
 import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { CategoriesRepository } from '../repositories/categories.repository';
 
@@ -14,7 +17,11 @@ interface CreateCategoryUseCaseRequest {
 type CreateCategoryUseCaseResponse = Either<InvalidCategoryOwnerIdError, { category: Category }>;
 
 export class CreateCategoryUseCase {
-  constructor(private readonly categoriesRepository: CategoriesRepository) {}
+  constructor(
+    private readonly categoriesRepository: CategoriesRepository,
+    private readonly queue: Queue,
+    private readonly storage: Storage,
+  ) {}
 
   public async execute({
     title,
@@ -30,6 +37,12 @@ export class CreateCategoryUseCase {
     });
 
     const newCategory = await this.categoriesRepository.create(category);
+
+    // Send message to the queue
+    await GatewayUtils.sendCategoryMessageToQueue(this.queue, 'catalog-emit', newCategory);
+
+    // Save message to storage
+    await GatewayUtils.saveCategoryMessageToStorage(this.storage, 'catalog-emit', newCategory);
 
     return right({ category: newCategory });
   }

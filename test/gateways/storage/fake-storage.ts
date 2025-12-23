@@ -11,6 +11,7 @@ export class FakeStorage implements Storage {
         this.storage.set(topic, []);
       }
       this.storage.get(topic)!.push(message);
+      console.log('Salvei no storage fake ->', { topic, message });
       return right('Message saved');
     } catch {
       return left(new Error('Error saving message to storage'));

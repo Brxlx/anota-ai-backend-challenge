@@ -1,10 +1,14 @@
 import { makeCategoryFactory } from 'test/factories/make-category.factory';
+import { FakeQueue } from 'test/gateways/queue/fake-queue';
+import { FakeStorage } from 'test/gateways/storage/fake-storage';
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories.repository';
 
 import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { CreateCategoryUseCase } from './create-category-use-case';
 
 let categoriesRepository: InMemoryCategoriesRepository;
+let queue: FakeQueue;
+let storage: FakeStorage;
 
 /**
  * System Under Test (SUT)
@@ -17,7 +21,9 @@ suite('[Category][UseCase]', () => {
    */
   beforeEach(() => {
     categoriesRepository = new InMemoryCategoriesRepository();
-    sut = new CreateCategoryUseCase(categoriesRepository);
+    queue = new FakeQueue();
+    storage = new FakeStorage();
+    sut = new CreateCategoryUseCase(categoriesRepository, queue, storage);
   });
   describe('Create Category', () => {
     it('should be able to create a new Regular Wallet', async () => {

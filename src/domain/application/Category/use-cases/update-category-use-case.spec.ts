@@ -1,4 +1,6 @@
 import { makeCategoryFactory } from 'test/factories/make-category.factory';
+import { FakeQueue } from 'test/gateways/queue/fake-queue';
+import { FakeStorage } from 'test/gateways/storage/fake-storage';
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories.repository';
 
 import { ID } from '@/core/entities/id';
@@ -12,6 +14,8 @@ let categoriesRepository: InMemoryCategoriesRepository;
  * System Under Test (SUT)
  */
 let sut: UpdateCategoryUseCase;
+let queue: FakeQueue;
+let storage: FakeStorage;
 
 suite('[Category][UseCase]', () => {
   /*
@@ -19,7 +23,9 @@ suite('[Category][UseCase]', () => {
    */
   beforeEach(() => {
     categoriesRepository = new InMemoryCategoriesRepository();
-    sut = new UpdateCategoryUseCase(categoriesRepository);
+    queue = new FakeQueue();
+    storage = new FakeStorage();
+    sut = new UpdateCategoryUseCase(categoriesRepository, queue, storage);
   });
   describe('Update Category', () => {
     it('should be able to update title and description from Category', async () => {
