@@ -30,7 +30,8 @@
     "bson": "^7.0.0",
     "reflect-metadata": "^0.2.2",
     "remove": "^0.1.5",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
