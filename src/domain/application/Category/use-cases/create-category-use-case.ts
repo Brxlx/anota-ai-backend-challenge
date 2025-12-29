@@ -36,6 +36,7 @@ export class CreateCategoryUseCase {
       ownerId: new ID(ownerId),
     });
 
+    // Update in DB
     const newCategory = await this.categoriesRepository.create(category);
 
     // Send message to the queue

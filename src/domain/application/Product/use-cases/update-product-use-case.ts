@@ -46,10 +46,10 @@ export class UpdateProductUseCase {
     await this.productsRepository.update(updatedProduct);
 
     // Send to queue
-    await GatewayUtils.saveProductMessageToQueue(this.queue, 'catalog-emit', updatedProduct);
+    await this.sendProductToQueue(this.queue, 'catalog-emit', updatedProduct);
 
     // Save to storage
-    await GatewayUtils.saveProductMessageToStorage(this.storage, 'catalog-emit', updatedProduct);
+    await this.sendProductToStorage(this.storage, 'catalog-emit', updatedProduct);
 
     return right({ product: updatedProduct });
   }
@@ -74,5 +74,31 @@ export class UpdateProductUseCase {
     if (request.category !== undefined) product.setCategory(request.category);
 
     return product;
+  }
+
+  private async sendProductToQueue(
+    queue: Queue,
+    topic: string,
+    product: Product,
+  ): Promise<Either<Error, boolean>> {
+    try {
+      await GatewayUtils.saveProductMessageToQueue(queue, topic, product);
+      return right(true);
+    } catch {
+      return left(new Error('Error trying to update queue'));
+    }
+  }
+
+  private async sendProductToStorage(
+    storage: Storage,
+    topic: string,
+    product: Product,
+  ): Promise<Either<Error, boolean>> {
+    try {
+      await GatewayUtils.saveProductMessageToStorage(storage, topic, product);
+      return right(true);
+    } catch {
+      return left(new Error('Error trying to update storage'));
+    }
   }
 }
