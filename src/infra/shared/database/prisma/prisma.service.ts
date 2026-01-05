@@ -1,5 +1,5 @@
+import { Prisma, PrismaClient } from '@generated/prisma/client';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Prisma, PrismaClient } from 'generated/prisma/client';
 
 import { EnvService } from '@/infra/shared/env/env.service';
 

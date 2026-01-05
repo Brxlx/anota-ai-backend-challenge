@@ -1,0 +1,44 @@
+services:
+  # 1. Serviço LocalStack
+  localstack:
+    # Imagem oficial do LocalStack
+    image: localstack/localstack:latest
+    container_name: localstack
+    # Mapeia a porta default do LocalStack para o host
+    ports:
+      - "4566:4566" 
+      - "4510-4559:4510-4559"
+    environment:
+      # Define os serviços a serem carregados. Aqui, apenas o SQS.
+      - SERVICES=sqs,s3
+      # Permite a criação automática de recursos
+      - DEFAULT_REGION=us-east-1
+      # Logs verbosos
+      - DEBUG=1
+      - LS_LOG=trace  # <--- Adicione esta linha para ver o conteúdo das mensagens
+      # Nome do host para o qual as requisições devem ser resolvidas
+      # Usado para que o LocalStack saiba para qual IP/Host deve retornar URLs (opcional, mas útil)
+      - HOSTNAME_EXTERNAL=localstack
+    volumes:
+      # Persistência de dados
+      - "./localstack_data:/var/lib/localstack"
+      # Mapeamento do Docker socket para rodar o LocalStack com recursos avançados (opcional)
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  
+  # 2. Serviço Node.js API
+  # node-api:
+  #   build: 
+  #     # Constrói a imagem a partir do Dockerfile no subdiretório node-api
+  #     context: ./node-api
+  #     dockerfile: Dockerfile
+  #   container_name: node-sqs-api
+  #   # Mapeia a porta da API para o host
+  #   ports:
+  #     - "3000:3000"
+  #   # Garante que o LocalStack esteja pronto antes de iniciar a API
+  #   depends_on:
+  #     - localstack
+  #   # Expõe a variável de ambiente para que a API saiba onde está o LocalStack (redundante com a rede Docker, mas boa prática)
+  #   environment:
+  #     # O cliente AWS usará o nome do serviço 'localstack' para se comunicar
+  #     AWS_ENDPOINT_URL: http://localstack:4566

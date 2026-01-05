@@ -10,8 +10,6 @@ export const createCategorySchema = extendApi(
     title: z.string(),
     description: z.string(),
     ownerId: z.string().refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' }),
-    createdAt: z.date(),
-    updatedAt: z.date().optional(),
   }),
 );
 

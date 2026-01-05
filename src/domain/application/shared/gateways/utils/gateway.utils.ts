@@ -6,19 +6,19 @@ import { Storage } from '../storage.gateway';
 
 export class GatewayUtils {
   static async sendCategoryMessageToQueue(queue: Queue, topic: string, category: Category): Promise<void> {
-    try {
-      await queue.produce(
-        topic,
-        JSON.stringify({
-          categoryId: category.id.toString(),
-          ownerId: category.ownerId.toString(),
-          title: category.title,
-          description: category.description,
-        }),
-      );
-    } catch {
-      // Log error but do not block the main flow
-      console.error('Failed to send message to queue');
+    const response = await queue.produce(
+      topic,
+      JSON.stringify({
+        categoryId: category.id.toString(),
+        ownerId: category.ownerId.toString(),
+        title: category.title,
+        description: category.description,
+      }),
+    );
+
+    if (response.isLeft()) {
+      console.log(`Got error: ${response.value}`);
+      throw new Error(`Cagou. ${response.value}`);
     }
   }
 

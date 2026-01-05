@@ -1,0 +1,10 @@
+###
+@name=create_category
+POST http://localhost:9300/categories
+Content-Type: application/json
+
+{
+  "title": "teste",
+  "description": "teste",
+  "ownerId": "695bbb3cb2c86837f361c171"
+}
