@@ -5,6 +5,7 @@ import { Category } from '@/domain/enterprise/entities/category';
 import { Queue } from '../../shared/gateways/queue.gateway';
 import { Storage } from '../../shared/gateways/storage.gateway';
 import { GatewayUtils } from '../../shared/gateways/utils/gateway.utils';
+import { CategoryAlreadyExistsError } from '../errors/category-already-exists.error';
 import { InvalidCategoryOwnerIdError } from '../errors/invalid-category-owner-id.error';
 import { CategoriesRepository } from '../repositories/categories.repository';
 
@@ -14,7 +15,10 @@ interface CreateCategoryUseCaseRequest {
   ownerId: string;
 }
 
-type CreateCategoryUseCaseResponse = Either<InvalidCategoryOwnerIdError, { category: Category }>;
+type CreateCategoryUseCaseResponse = Either<
+  InvalidCategoryOwnerIdError | CategoryAlreadyExistsError,
+  { category: Category }
+>;
 
 export class CreateCategoryUseCase {
   constructor(
@@ -30,11 +34,17 @@ export class CreateCategoryUseCase {
   }: CreateCategoryUseCaseRequest): Promise<CreateCategoryUseCaseResponse> {
     if (!Category.isValidId(ownerId)) return left(new InvalidCategoryOwnerIdError());
 
+    const categoryAlreadyInDb = await this.categoriesRepository.findByTitle(title);
+
+    if (categoryAlreadyInDb) return left(new CategoryAlreadyExistsError());
+
     const category = Category.create({
       title,
       description,
       ownerId: new ID(ownerId),
     });
+
+    // TODO: Buscar pelo nome da categoria
 
     // Update in DB
     const newCategory = await this.categoriesRepository.create(category);

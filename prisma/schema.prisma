@@ -17,7 +17,7 @@ datasource db {
 
 model Category {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
+  title       String    @unique
   description String
   ownerId     String
   createdAt   DateTime  @default(now())
@@ -30,7 +30,7 @@ model Category {
 
 model Product {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
+  title       String   @unique
   description String
   price       Float
   ownerId     String

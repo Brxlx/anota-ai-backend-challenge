@@ -6,22 +6,20 @@ import {
   SendMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { Either, left, right } from '@/core/types/either';
 import { ConsumingFromQueueError } from '@/domain/application/Product/errors/consuming-from-queue.error';
 import { SendToQueueError } from '@/domain/application/Product/errors/send-to-queue.error';
-import { CoreEnv } from '@/domain/application/shared/env/env';
 import { Queue } from '@/domain/application/shared/gateways/queue.gateway';
 
-import { Env } from '../../env/env.schema';
+import { EnvService } from '../../env/env.service';
 
 @Injectable()
-export class AwsSqsQueueService implements Queue, OnModuleInit {
+export class AwsSqsQueueService implements Queue {
   private readonly sqs: SQSClient;
-  private isConsuming = false;
 
-  constructor(private readonly envService: CoreEnv<Env>) {
+  constructor(private readonly envService: EnvService) {
     this.sqs = new SQSClient({
       region: this.envService.get('AWS_REGION'),
       endpoint: this.envService.get('AWS_SQS_ENDPOINT'),
@@ -30,10 +28,6 @@ export class AwsSqsQueueService implements Queue, OnModuleInit {
         secretAccessKey: this.envService.get('AWS_SECRET_ACCESS_KEY'),
       },
     });
-  }
-  async onModuleInit() {
-    this.isConsuming = true;
-    // await this.consume('catalog-emit');
   }
 
   async produce(

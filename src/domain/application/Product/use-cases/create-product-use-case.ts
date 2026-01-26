@@ -8,6 +8,7 @@ import { Queue } from '../../shared/gateways/queue.gateway';
 import { Storage } from '../../shared/gateways/storage.gateway';
 import { InvalidProductIdError } from '../errors/invalid-product-id.error';
 import { InvalidProductOwnerIdError } from '../errors/invalid-product-owner-id.error';
+import { ProductAlreadyExistsError } from '../errors/product-already-exists.error';
 import { SendToQueueError } from '../errors/send-to-queue.error';
 import { SendToStorageError } from '../errors/send-to-storage.error';
 import { ProductsRepository } from '../repositories/products.repository';
@@ -37,6 +38,10 @@ export class CreateProductUseCase {
     category,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
     if (!Product.isValidId(ownerId)) return left(new InvalidProductOwnerIdError());
+
+    const productAlreadyInDb = await this.productsRepository.findByTitle(title);
+
+    if (productAlreadyInDb) return left(new ProductAlreadyExistsError());
 
     const product = Product.create({
       title,

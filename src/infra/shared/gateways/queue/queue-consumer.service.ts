@@ -14,9 +14,9 @@ export class QueueConsumerService implements OnModuleInit {
     private readonly envService: EnvService,
   ) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     this.isConsuming = true;
-    await this.startConsuming();
+    void this.startConsuming();
   }
 
   private async startConsuming() {

@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@generated/prisma/client';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
+import { prefixedLogger } from '@/infra/helpers/prefixed-logger';
 import { EnvService } from '@/infra/shared/env/env.service';
 
 @Injectable()
@@ -19,7 +20,8 @@ export class PrismaService
   >
   implements OnModuleInit, OnModuleDestroy
 {
-  private readonly logger = new Logger(PrismaService.name);
+  private logger: Logger;
+
   constructor(private readonly envService: EnvService) {
     super({
       log: [
@@ -42,11 +44,21 @@ export class PrismaService
       ],
       errorFormat: 'pretty',
     });
+
+    this.logger = prefixedLogger(this.envService.get('NODE_ENV'))!;
   }
 
   async onModuleInit() {
-    await this.$connect();
+    try {
+      await this.$connect();
+      await this.$runCommandRaw({ ping: 1 });
+      this.logger.log('Connected to the database successfully');
+    } catch (err) {
+      this.logger.error('Error connecting to the database', err);
+      process.exit(1);
+    }
 
+    // Não logar queries em produção
     if (this.envService.get('NODE_ENV') === 'prod') return;
 
     this.$on('query', (event) => {

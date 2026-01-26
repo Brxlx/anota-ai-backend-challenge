@@ -18,6 +18,14 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return product;
   }
 
+  async findByTitle(title: string): Promise<Product | null> {
+    const product = Array.from(this.items.values()).find((item) => item.title === title);
+
+    if (!product) return null;
+
+    return product;
+  }
+
   async create(product: Product): Promise<Product> {
     this.items.set(product.id.toString(), product);
 

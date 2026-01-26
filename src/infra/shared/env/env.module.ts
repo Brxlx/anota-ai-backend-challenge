@@ -13,7 +13,7 @@ import { EnvService } from './env.service';
       isGlobal: true,
       cache: true,
       expandVariables: true,
-      envFilePath: ['.env', `.env.${process.env.NODE_ENV}`],
+      envFilePath: ['.env'],
     }),
   ],
   providers: [{ provide: CoreEnv, useClass: EnvService }, EnvService],

@@ -16,6 +16,15 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
 
     return category;
   }
+
+  async findByTitle(title: string): Promise<Category | null> {
+    const category = Array.from(this.items.values()).find((item) => item.title === title);
+
+    if (!category) return null;
+
+    return category;
+  }
+
   async create(category: Category): Promise<Category> {
     this.items.set(category.id.toString(), category);
 
