@@ -1,3 +1,5 @@
+import { Logger } from '@nestjs/common';
+
 import { Category } from '@/domain/enterprise/entities/category';
 import { Product } from '@/domain/enterprise/entities/product';
 
@@ -5,6 +7,8 @@ import { Queue } from '../queue.gateway';
 import { Storage } from '../storage.gateway';
 
 export class GatewayUtils {
+  private static readonly logger = new Logger(GatewayUtils.name);
+
   static async sendCategoryMessageToQueue(queue: Queue, topic: string, category: Category): Promise<void> {
     const response = await queue.produce(
       topic,
@@ -17,8 +21,8 @@ export class GatewayUtils {
     );
 
     if (response.isLeft()) {
-      console.log(`Got error: ${response.value}`);
-      throw new Error(`Cagou. ${response.value}`);
+      this.logger.log(`Got error: ${response.value}`);
+      // throw new Error(`Cagou. ${response.value}`);
     }
   }
 
