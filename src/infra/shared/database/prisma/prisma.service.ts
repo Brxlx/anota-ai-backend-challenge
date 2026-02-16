@@ -51,7 +51,13 @@ export class PrismaService
   async onModuleInit() {
     try {
       await this.$connect();
-      await this.$runCommandRaw({ ping: 1 });
+      // Timeout de 3 segundos para o ping
+      const pingPromise = this.$runCommandRaw({ ping: 1 });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Database ping timeout after 5 seconds')), 5000),
+      );
+
+      await Promise.race([pingPromise, timeoutPromise]);
       this.logger.log('Connected to the database successfully');
     } catch (err) {
       this.logger.error('Error connecting to the database', err);

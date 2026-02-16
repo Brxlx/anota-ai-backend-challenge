@@ -26,6 +26,7 @@ export class QueueConsumerService implements OnModuleInit {
       if (result.isRight()) {
         const message = result.value;
         this.logger.log(`Mensagem consumida: ${message}`);
+        this.isConsuming = false;
         // Aqui você pode processar a mensagem conforme necessário
       }
       // Pequeno delay para evitar loop muito agressivo
