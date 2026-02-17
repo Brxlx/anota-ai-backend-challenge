@@ -24,6 +24,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
+    "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "types": [

@@ -3,6 +3,7 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { prefixedLogger } from '../helpers/prefixed-logger';
 import { Env } from '../shared/env/env.schema';
 import { EnvService } from '../shared/env/env.service';
+import { Swagger } from './Swagger';
 
 export class App {
   private app: INestApplication;
@@ -22,9 +23,15 @@ export class App {
     this.port = this.envService.get('APP_PORT');
   }
 
+  private loadSwaggerApi() {
+    return Swagger.run(this.app);
+  }
+
   public async run() {
     try {
       this.loadEnvConfig();
+      this.loadSwaggerApi();
+
       await this.app.listen(this.port!, '0.0.0.0', () => {
         this.logger.log(`Server started on port ${this.port}`);
       });

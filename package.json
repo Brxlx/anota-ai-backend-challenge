@@ -22,7 +22,6 @@
     "test:e2e:watch": "vitest --config ./vitest.config.e2e.mjs"
   },
   "dependencies": {
-    "@anatine/zod-openapi": "^2.2.8",
     "@aws-sdk/client-s3": "^3.962.0",
     "@aws-sdk/client-sqs": "^3.962.0",
     "@faker-js/faker": "^10.1.0",
@@ -33,7 +32,9 @@
     "@nestjs/schedule": "^6.1.0",
     "@nestjs/swagger": "^11.2.3",
     "@prisma/client": "6.19.1",
+    "@scalar/nestjs-api-reference": "^1.0.24",
     "bson": "^7.0.0",
+    "nestjs-zod": "^5.1.1",
     "reflect-metadata": "^0.2.2",
     "remove": "^0.1.5",
     "rxjs": "^7.8.1",

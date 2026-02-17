@@ -3,6 +3,7 @@ import { Response } from 'express';
 
 import { CategoryAlreadyExistsError } from '@/domain/application/Category/errors/category-already-exists.error';
 import { InvalidCategoryIdError } from '@/domain/application/Category/errors/invalid-category-id.error';
+import { InvalidCategoryOwnerIdError } from '@/domain/application/Category/errors/invalid-category-owner-id.error';
 import { ConsumingFromQueueError } from '@/domain/application/Product/errors/consuming-from-queue.error';
 import { InvalidProductIdError } from '@/domain/application/Product/errors/invalid-product-id.error';
 import { InvalidProductOwnerIdError } from '@/domain/application/Product/errors/invalid-product-owner-id.error';
@@ -33,6 +34,7 @@ export class UseCaseErrorFilter implements ExceptionFilter {
   private mapErroToStatusCode = new Map<string, HttpStatus>([
     [CategoryAlreadyExistsError.name, HttpStatus.BAD_REQUEST],
     [InvalidCategoryIdError.name, HttpStatus.BAD_REQUEST],
+    [InvalidCategoryOwnerIdError.name, HttpStatus.BAD_REQUEST],
     [ConsumingFromQueueError.name, HttpStatus.GATEWAY_TIMEOUT],
     [InvalidProductIdError.name, HttpStatus.BAD_REQUEST],
     [InvalidProductOwnerIdError.name, HttpStatus.BAD_REQUEST],
