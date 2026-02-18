@@ -27,14 +27,17 @@ export class App {
     return Swagger.run(this.app);
   }
 
-  public async run() {
+  private async runApp() {
+    await this.app.listen(this.port!, '0.0.0.0', () => {
+      this.logger.log(`✅ Server started on port ${this.port}`);
+    });
+  }
+
+  public run() {
     try {
       this.loadEnvConfig();
       this.loadSwaggerApi();
-
-      await this.app.listen(this.port!, '0.0.0.0', () => {
-        this.logger.log(`Server started on port ${this.port}`);
-      });
+      void this.runApp();
     } catch (err: any) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error(`Failed to start the app: \nReason: ${err.message}\n`);

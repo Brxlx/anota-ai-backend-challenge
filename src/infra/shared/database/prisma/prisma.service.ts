@@ -58,7 +58,7 @@ export class PrismaService
       );
 
       await Promise.race([pingPromise, timeoutPromise]);
-      this.logger.log('Connected to the database successfully');
+      this.logger.log('✅ Connected to the database successfully');
     } catch (err) {
       this.logger.error('Error connecting to the database', err);
       process.exit(1);

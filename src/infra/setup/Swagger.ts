@@ -21,7 +21,7 @@ export class Swagger {
       '/docs',
       apiReference({
         content: document,
-        theme: 'laserwave',
+        theme: 'none',
         title: 'Anota Aí API Reference',
         servers: [
           {
