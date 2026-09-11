@@ -31,14 +31,14 @@ type ResponseExtractor = (response: unknown) => NestHttpExceptionResponse;
 
 @Catch(Error)
 export class UseCaseErrorFilter implements ExceptionFilter {
-  private mapErroToStatusCode = new Map<string, HttpStatus>([
+  private mapErrorToStatusCode = new Map<string, HttpStatus>([
     [CategoryAlreadyExistsError.name, HttpStatus.BAD_REQUEST],
     [InvalidCategoryIdError.name, HttpStatus.BAD_REQUEST],
     [InvalidCategoryOwnerIdError.name, HttpStatus.BAD_REQUEST],
     [ConsumingFromQueueError.name, HttpStatus.GATEWAY_TIMEOUT],
     [InvalidProductIdError.name, HttpStatus.BAD_REQUEST],
     [InvalidProductOwnerIdError.name, HttpStatus.BAD_REQUEST],
-    [ProductAlreadyExistsError.name, HttpStatus.BAD_REQUEST],
+    [ProductAlreadyExistsError.name, HttpStatus.UNPROCESSABLE_ENTITY],
     [SendToQueueError.name, HttpStatus.SERVICE_UNAVAILABLE],
     [SendToStorageError.name, HttpStatus.SERVICE_UNAVAILABLE],
     [NegativeAmountError.name, HttpStatus.BAD_REQUEST],
@@ -90,7 +90,7 @@ export class UseCaseErrorFilter implements ExceptionFilter {
     //   this.mapErroToStatusCode.get(error.constructor.name),
     // );
     const statusCode =
-      this.mapErroToStatusCode.get(error.constructor.name) ?? HttpStatus.INTERNAL_SERVER_ERROR;
+      this.mapErrorToStatusCode.get(error.constructor.name) ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
     return response.status(statusCode).send({
       statusCode,

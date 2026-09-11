@@ -1,11 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ZodResponse, ZodSerializerInterceptor } from 'nestjs-zod';
+import { ZodResponse } from 'nestjs-zod';
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 
 import { CreateCategoryDTO, CreateCategoryResponseDTO } from '../types/category.dto';
-import { type CreateCategorySchema, createCategorySchema } from '../types/create-category.schema';
+import { createCategorySchema } from '../types/create-category.schema';
 import { CreateCategoryService } from './create-category.service';
 
 @ApiTags('Category')
@@ -30,6 +30,7 @@ export class CreateCategoryController {
       throw result.value;
     }
 
+    // TODO: Colocar em um presenter
     return {
       category: {
         id: result.value.category.id.toString(),
