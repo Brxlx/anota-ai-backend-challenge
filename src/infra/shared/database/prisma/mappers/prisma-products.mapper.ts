@@ -1,4 +1,4 @@
-import { Product as PrismaProduct, Prisma } from '@/../generated/prisma/client';
+import { Prisma, Product as PrismaProduct } from '@/../generated/prisma/client';
 import { ID } from '@/core/entities/id';
 import { Product } from '@/domain/enterprise/entities/product';
 import { Price } from '@/domain/enterprise/entities/value-objects/price';

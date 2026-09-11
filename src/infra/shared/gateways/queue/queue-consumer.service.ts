@@ -1,11 +1,11 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 import { Queue } from '@/domain/application/shared/gateways/queue.gateway';
 
 import { EnvService } from '../../env/env.service';
 
 @Injectable()
-export class QueueConsumerService implements OnModuleInit {
+export class QueueConsumerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(QueueConsumerService.name);
   private isConsuming = false;
 
@@ -27,10 +27,14 @@ export class QueueConsumerService implements OnModuleInit {
         const message = result.value;
         this.logger.log(`Mensagem consumida: ${message}`);
         this.isConsuming = false;
-        // Aqui você pode processar a mensagem conforme necessário
+        // Aqui processa a mensagem conforme necessário
       }
       // Pequeno delay para evitar loop muito agressivo
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
+  }
+
+  onModuleDestroy() {
+    this.isConsuming = false;
   }
 }
