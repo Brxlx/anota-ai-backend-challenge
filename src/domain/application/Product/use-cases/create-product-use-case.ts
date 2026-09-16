@@ -53,9 +53,9 @@ export class CreateProductUseCase {
 
     const newProduct = await this.productsRepository.create(product);
 
-    const sendToQueueResult = await this.sendToQueue('catalog-emit', this.buildProductMessage(newProduct));
+    await this.sendToQueue('catalog-emit', this.buildProductMessage(newProduct));
 
-    if (sendToQueueResult.isLeft()) return left(sendToQueueResult.value);
+    // if (sendToQueueResult.isLeft()) return left(sendToQueueResult.value);
 
     const sendToStorageResult = await this.saveToStorage(
       'catalog-emit',
@@ -84,15 +84,19 @@ export class CreateProductUseCase {
 
   private async sendToQueue(topic: string, message: string): Promise<Either<SendToQueueError, boolean>> {
     try {
-      // throw new Error('teste de erro na fila');
-      const { value } = await this.queue.produce(topic, message);
-      return value ? right(true) : left(new SendToQueueError());
+      const queueResult = await this.queue.produce(topic, message);
+
+      if (queueResult.isLeft()) {
+        return left(new SendToQueueError());
+      }
+
+      return right(true);
     } catch {
       return left(new SendToQueueError());
     }
   }
 
-  private async saveToStorage(key: string, value: string): Promise<Either<SendToQueueError, boolean>> {
+  private async saveToStorage(key: string, value: string): Promise<Either<SendToStorageError, boolean>> {
     try {
       await this.storage.save(key, value);
       return right(true);

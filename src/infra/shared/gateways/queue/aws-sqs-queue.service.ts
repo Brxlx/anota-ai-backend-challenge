@@ -18,6 +18,7 @@ import { EnvService } from '../../env/env.service';
 @Injectable()
 export class AwsSqsQueueService implements Queue {
   private readonly sqs: SQSClient;
+  private readonly failedQueueCache = new Set<string>();
 
   constructor(private readonly envService: EnvService) {
     this.sqs = new SQSClient({
@@ -59,28 +60,48 @@ export class AwsSqsQueueService implements Queue {
    * Garante que a fila existe, criando-a se necessário. Retorna a URL da fila.
    */
   private async ensureQueueExists(queueUrlOrName: string): Promise<string | null> {
-    // Se for uma URL, extrai o nome da fila
+    const maxAttempts = 5;
     let queueName = queueUrlOrName;
+
     if (queueUrlOrName.startsWith('http')) {
       const parts = queueUrlOrName.split('/');
       queueName = parts[parts.length - 1];
     }
-    try {
-      // Tenta obter a URL da fila
-      const getQueueUrlCmd = new GetQueueUrlCommand({ QueueName: queueName });
-      const getQueueUrlRes = await this.sqs.send(getQueueUrlCmd);
-      return getQueueUrlRes.QueueUrl || null;
-    } catch {
-      // Se não existir, cria
+
+    if (this.failedQueueCache.has(queueName)) {
+      return null;
+    }
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const createQueueCmd = new CreateQueueCommand({ QueueName: queueName });
-        const createQueueRes = await this.sqs.send(createQueueCmd);
-        return createQueueRes.QueueUrl || null;
+        const getQueueUrlRes = await this.sqs.send(new GetQueueUrlCommand({ QueueName: queueName }));
+        this.failedQueueCache.delete(queueName);
+        return getQueueUrlRes.QueueUrl || null;
       } catch {
-        return null;
+        try {
+          const createQueueRes = await this.sqs.send(new CreateQueueCommand({ QueueName: queueName }));
+          this.failedQueueCache.delete(queueName);
+          return createQueueRes.QueueUrl || null;
+        } catch {
+          if (attempt >= maxAttempts) {
+            this.failedQueueCache.add(queueName);
+            console.error(`Failed to create or get queue after ${maxAttempts} attempts: ${queueName}`);
+            return null;
+          }
+
+          const backoffMs = Math.min(100 * 2 ** (attempt - 1), 1000);
+          await this.wait(backoffMs);
+        }
       }
     }
+
+    return null;
   }
+
+  private wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   async consume(queueUrl: string): Promise<Either<ConsumingFromQueueError, string>> {
     try {
       const ensuredQueueUrl = await this.ensureQueueExists(queueUrl);

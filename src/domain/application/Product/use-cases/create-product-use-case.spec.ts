@@ -4,6 +4,8 @@ import { FakeQueue } from 'test/gateways/queue/fake-queue';
 import { FakeStorage } from 'test/gateways/storage/fake-storage';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products.repository';
 
+import { left } from '@/core/types/either';
+
 import { DomainEvents } from '../../shared/events/domain-events';
 import { InvalidProductOwnerIdError } from '../errors/invalid-product-owner-id.error';
 import { SendToQueueError } from '../errors/send-to-queue.error';
@@ -95,7 +97,7 @@ suite('[Product][UseCase]', () => {
       });
 
       // Simula falha na fila
-      vi.spyOn(queue, 'produce').mockImplementationOnce(() => {
+      const spy = vi.spyOn(queue, 'produce').mockImplementationOnce(() => {
         throw new SendToQueueError();
       });
 
@@ -107,10 +109,35 @@ suite('[Product][UseCase]', () => {
         category: newProduct.category.toString(),
       });
 
-      expect(result.isLeft()).toBeTruthy();
-      assert(result.isLeft()); // TypeScript now knows that result is Left
+      expect(result.isRight()).toBeTruthy();
+      assert(result.isRight()); // TypeScript now knows that result is Left
 
-      expect(result.value).toBeInstanceOf(SendToQueueError);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith('catalog-emit', expect.any(String));
+      expect(spy.mock.results[0].type).toBe('throw');
+    });
+
+    it('should return left when queue produce resolves to a left Either', async () => {
+      const newProduct = makeProductFactory({
+        title: 'Jacket',
+        description: 'A nice jacket',
+      });
+
+      const spy = vi.spyOn(queue, 'produce').mockResolvedValueOnce(left(new SendToQueueError()));
+
+      const result = await sut.execute({
+        title: newProduct.title,
+        description: newProduct.description,
+        ownerId: newProduct.ownerId.toValue(),
+        price: newProduct.price.amount,
+        category: newProduct.category.toString(),
+      });
+
+      expect(result.isRight()).toBeTruthy();
+      assert(result.isRight());
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith('catalog-emit', expect.any(String));
+      expect(spy.mock.results[0].type).toBe('return');
     });
 
     it('should throw error if storage fails', async () => {

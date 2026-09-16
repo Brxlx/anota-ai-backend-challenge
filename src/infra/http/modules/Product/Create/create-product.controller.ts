@@ -4,8 +4,8 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 
-import { CreateProductDTO, CreateProductResponseDTO } from '../types/product.dto';
 import { createProductSchema } from '../types/create-product.schema';
+import { CreateProductDTO, CreateProductResponseDTO } from '../types/product.dto';
 import { CreateProductService } from './create-product.service';
 
 @ApiTags('Product')
