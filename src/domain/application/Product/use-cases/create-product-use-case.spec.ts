@@ -1,4 +1,3 @@
-// import { FakeEnv } from 'test/env/fake-env';
 import { makeProductFactory } from 'test/factories/make-product.factory';
 import { FakeQueue } from 'test/gateways/queue/fake-queue';
 import { FakeStorage } from 'test/gateways/storage/fake-storage';
@@ -12,7 +11,6 @@ import { SendToQueueError } from '../errors/send-to-queue.error';
 import { SendToStorageError } from '../errors/send-to-storage.error';
 import { CreateProductUseCase } from './create-product-use-case';
 
-// let env: FakeEnv;
 let productsRepository: InMemoryProductsRepository;
 let queue: FakeQueue;
 let storage: FakeStorage;
@@ -27,7 +25,6 @@ suite('[Product][UseCase]', () => {
    */
   beforeEach(() => {
     productsRepository = new InMemoryProductsRepository();
-    // env = new FakeEnv();
     queue = new FakeQueue();
     storage = new FakeStorage();
     sut = new CreateProductUseCase(productsRepository, queue, storage);
