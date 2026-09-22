@@ -1,59 +1,41 @@
 # Copilot Instructions for anota-ai
 
-## Project Overview
-This is a NestJS-based TypeScript backend service. The codebase is organized for modularity and scalability, following NestJS conventions. Key files include:
-- `src/infra/main.ts`: Application entrypoint
-- `src/infra/app.module.ts`: Main module for dependency injection and configuration
-- `test/app.e2e-spec.ts`: End-to-end tests
+## Architecture
+This project follows a clean architecture split:
 
-## Architecture & Patterns
-- **Modular Structure**: Features and infrastructure are separated into their own directories under `src/`. Use NestJS modules and providers for encapsulation.
-- **Dependency Injection**: Services, repositories, and controllers are injected via NestJS decorators (`@Injectable`, `@Module`, etc.).
-- **Configuration**: App configuration is managed in `app.module.ts` and environment variables (not shown, but typical for NestJS).
-- **Testing**: Unit and e2e tests are in the `test/` directory. Use NestJS testing utilities and Vitest for test execution.
+- `src/domain/enterprise`: entities, value objects, and domain rules.
+- `src/domain/application`: use cases, repository contracts, and errors.
+- `src/core`: shared abstractions such as `ID`, `Either`, `BaseEntity`, and `AggregateRoot`.
+- `src/infra`: NestJS, Prisma, HTTP, queue, storage, and external integrations.
 
-## Developer Workflows
-- **Install dependencies**: `pnpm install`
-- **Start development server**: `pnpm run start:dev`
-- **Run in production mode**: `pnpm run start:prod`
-- **Run unit tests**: `pnpm run test`
-- **Run e2e tests**: `pnpm run test:e2e`
-- **Check test coverage**: `pnpm run test:cov`
+The dependency rule is strict: domain code must not import Nest, Prisma, HTTP classes, or external service libraries.
 
-## Conventions & Practices
-- **TypeScript Strictness**: Follow strict typing and use interfaces for data contracts.
-- **File Naming**: Use kebab-case for files and PascalCase for classes.
-- **Testing**: Place e2e tests in `test/` and unit tests alongside implementation files or in dedicated test folders.
-- **Build Config**: TypeScript configs are in `tsconfig.json` and `tsconfig.build.json`. Adjust paths and compiler options here.
-- **Linting**: ESLint is configured via `eslint.config.mjs`.
-- **Package Management**: Use `pnpm` for all dependency operations.
+## Project conventions
+- Use `camelCase` for variables and methods; `PascalCase` for classes; `kebab-case` for files.
+- Keep each feature under `src/domain/application/<Feature>/` and `src/infra/http/modules/<Feature>/`.
+- Repository interfaces belong in `src/domain/application/<Feature>/repositories`.
+- Use cases belong in `src/domain/application/<Feature>/use-cases` and should return `Either`.
+- Domain validation belongs in entities or value objects.
+- HTTP modules and controllers are adapters only; they delegate to use cases.
 
-## Integration Points
-- **External Services**: Integrate with external APIs/services via dedicated modules and providers.
-- **Environment Variables**: Use `.env` files and NestJS ConfigModule for secrets and configuration (not present, but standard).
-- **Deployment**: For cloud deployment, use [NestJS Mau](https://mau.nestjs.com) as described in the README.
+## Clean code rules
+- Keep constructors explicit and dependency-injected.
+- Keep business logic out of controllers, repositories, and mappers.
+- Validate early and return `left(...)` for domain/application failures.
+- Prefer small methods with one responsibility and composition over concrete coupling.
 
-## Example Patterns
-- **Module Definition**:
-  ```typescript
-  @Module({
-    imports: [...],
-    providers: [...],
-    controllers: [...],
-  })
-  export class AppModule {}
-  ```
-- **Service Injection**:
-  ```typescript
-  @Injectable()
-  export class MyService {
-    constructor(private readonly dep: DepService) {}
-  }
-  ```
+## Testing rules
+- Unit tests stay next to the use case or domain logic they validate.
+- Prefer `InMemory*Repository` and fake gateways from `test/` instead of mocking the business layer.
+- Assert real outcomes: repository state and `Either` results.
+- Test names should follow `should be able to ...` and `should throw error ...`.
 
-## References
-- [NestJS Documentation](https://docs.nestjs.com)
-- See `README.md` for more details on setup and deployment.
+## Commands
+- Install: `pnpm install`
+- Start dev: `pnpm run dev`
+- Run tests: `pnpm run test`
+- Run coverage: `pnpm run test:cov`
+- Run e2e: `pnpm run test:e2e`
 
 ---
-*Update this file if project structure or conventions change. Feedback welcome for unclear sections.*
+This file is the global baseline; feature-specific guidance lives in the skills under `.github/skills`.
