@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { Response } from 'express';
 
 import { CategoryAlreadyExistsError } from '@/domain/application/Category/errors/category-already-exists.error';
@@ -11,6 +11,7 @@ import { ProductAlreadyExistsError } from '@/domain/application/Product/errors/p
 import { SendToQueueError } from '@/domain/application/Product/errors/send-to-queue.error';
 import { SendToStorageError } from '@/domain/application/Product/errors/send-to-storage.error';
 import { NegativeAmountError } from '@/domain/enterprise/entities/value-objects/errors/negtive-amount.error';
+import { AppLogger } from '@/infra/logging/app-logger.service';
 
 // Interface para representar a estrutura da resposta do NestJS para exceções HTTP
 interface NestHttpExceptionResponse {
@@ -31,6 +32,8 @@ type ResponseExtractor = (response: unknown) => NestHttpExceptionResponse;
 
 @Catch(Error)
 export class UseCaseErrorFilter implements ExceptionFilter {
+  constructor(@Inject(AppLogger) private readonly logger: AppLogger) {}
+
   private mapErrorToStatusCode = new Map<string, HttpStatus>([
     [CategoryAlreadyExistsError.name, HttpStatus.BAD_REQUEST],
     [InvalidCategoryIdError.name, HttpStatus.BAD_REQUEST],

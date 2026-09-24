@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from '@nestjs/common';
+
+import { AppLogger } from '@/infra/logging/app-logger.service';
 
 /**
  * A global exception filter that handles HTTP exceptions and provides a consistent error response format.
@@ -11,6 +13,8 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/co
  */
 @Catch(HttpException)
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
+  constructor(@Inject(AppLogger) private readonly logger: AppLogger) {}
+
   /*
    * The error response is structured as follows:
    * - `statusCode`: The HTTP status code of the response.
@@ -20,7 +24,10 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
    * Important: IF uses fastify as provider, uses `.send()`method instead of `.json()`
    */
   catch(exception: any, host: ArgumentsHost) {
-    console.log('Exception response:', exception.response);
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const status = exception instanceof HttpException ? exception.getStatus() : 500;
+
     let errMessage = exception.response;
     let errors = undefined;
 
@@ -31,9 +38,17 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       errMessage = exception.response.message;
       errors = exception.response.errors;
     }
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const status = exception instanceof HttpException ? exception.getStatus() : 500;
+
+    this.logger.logError(
+      {
+        name: exception?.name ?? 'HttpException',
+        message: typeof errMessage === 'string' ? errMessage : 'Unexpected HTTP error',
+        statusCode: status,
+        metadata: { errors, response: exception.response },
+        stack: exception?.stack,
+      },
+      GlobalHttpExceptionFilter.name,
+    );
 
     response.status(status).send({
       statusCode: status,

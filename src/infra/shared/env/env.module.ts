@@ -3,13 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 
 import { CoreEnv } from '@/domain/application/shared/env/env';
 
-import { envSchema } from './env.schema';
+import { validateEnv } from './env.schema';
 import { EnvService } from './env.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      validate: (config) => envSchema.parse(config),
+      validate: validateEnv,
       isGlobal: true,
       cache: true,
       expandVariables: true,

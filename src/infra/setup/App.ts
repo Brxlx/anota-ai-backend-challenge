@@ -33,11 +33,11 @@ export class App {
     });
   }
 
-  public run() {
+  public async run() {
     try {
       this.loadEnvConfig();
       this.loadSwaggerApi();
-      void this.runApp();
+      await this.runApp();
     } catch (err: any) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error(`Failed to start the app: \nReason: ${err.message}\n`);
