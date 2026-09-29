@@ -85,6 +85,7 @@ suite('[Product][UseCase]', () => {
       assert(result.isLeft()); // TypeScript now knows that result is Left
 
       expect(result.value).toBeInstanceOf(InvalidProductOwnerIdError);
+      expect(result.value.message).toEqual('Invalid OwnerId');
     });
 
     it('should throw error if queue fails', async () => {

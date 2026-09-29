@@ -6,9 +6,15 @@ export const updateProductSchema = z.object({
   id: z.string().refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' }),
   title: z.string().optional(),
   description: z.string().optional(),
-  ownerId: z.string().refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' }).optional(),
+  ownerId: z
+    .string()
+    .refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' })
+    .optional(),
   price: z.number().positive().optional(),
-  category: z.string().refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' }).optional(),
+  category: z
+    .string()
+    .refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' })
+    .optional(),
 });
 
 export const updateProductResponseSchema = z.object({

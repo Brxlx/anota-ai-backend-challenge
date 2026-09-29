@@ -6,7 +6,10 @@ export const updateCategorySchema = z.object({
   id: z.string().refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' }),
   title: z.string().optional(),
   description: z.string().optional(),
-  ownerId: z.string().refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' }).optional(),
+  ownerId: z
+    .string()
+    .refine((value: string) => new ID(value).isValid(), { error: 'Invalid ID' })
+    .optional(),
 });
 
 export const updateCategoryResponseSchema = z.object({

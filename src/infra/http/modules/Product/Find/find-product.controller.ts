@@ -4,8 +4,8 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 
-import { FindProductDTO, FindProductResponseDTO } from '../types/product.dto';
 import { findProductSchema } from '../types/find-product.schema';
+import { FindProductDTO, FindProductResponseDTO } from '../types/product.dto';
 import { FindProductByIdService } from './find-product.service';
 
 @ApiTags('Product')

@@ -21,6 +21,7 @@ export class AwsSqsQueueService implements Queue {
   private readonly failedQueueCache = new Set<string>();
 
   constructor(private readonly envService: EnvService) {
+    // Call the constructor to initialize the SQS client
     this.sqs = new SQSClient({
       region: this.envService.get('AWS_REGION'),
       endpoint: this.envService.get('AWS_SQS_ENDPOINT'),

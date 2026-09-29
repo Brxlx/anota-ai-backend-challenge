@@ -4,10 +4,7 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 
-import {
-  UpdateCategoryDTO,
-  UpdateCategoryResponseDTO,
-} from '../types/category.dto';
+import { UpdateCategoryDTO, UpdateCategoryResponseDTO } from '../types/category.dto';
 import { updateCategorySchema } from '../types/update-category.schema';
 import { UpdateCategoryService } from './update-category.service';
 

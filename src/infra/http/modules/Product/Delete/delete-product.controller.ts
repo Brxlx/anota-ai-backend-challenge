@@ -4,8 +4,8 @@ import { ZodResponse } from 'nestjs-zod';
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 
-import { DeleteProductDTO, DeleteProductResponseDTO } from '../types/product.dto';
 import { deleteProductSchema } from '../types/delete-product.schema';
+import { DeleteProductDTO, DeleteProductResponseDTO } from '../types/product.dto';
 import { DeleteProductByIdService } from './delete-product.service';
 
 @ApiTags('Product')
