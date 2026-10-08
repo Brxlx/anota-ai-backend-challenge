@@ -64,6 +64,8 @@ suite('[Product][UseCase]', () => {
       expect(messageSentToQueue).toBeDefined();
       expect(storageValue).toBeDefined();
       expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(result.value.product.id);
     });
 
     it('should throw error creating Category with ivalid ownerId', async () => {

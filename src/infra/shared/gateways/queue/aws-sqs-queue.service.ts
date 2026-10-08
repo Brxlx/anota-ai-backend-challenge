@@ -32,6 +32,12 @@ export class AwsSqsQueueService implements Queue {
     });
   }
 
+  /**
+   * Produces a message to the specified queue.
+   * @param queueUrl The URL of the queue to produce the message to.
+   * @param message The message to be sent to the queue.
+   * @returns A promise that resolves to an object containing the message ID, the message body, and a boolean indicating whether the message was successfully sent.
+   */
   async produce(
     queueUrl: string,
     message: string,

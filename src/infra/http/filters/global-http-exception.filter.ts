@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from '@nestjs/common';
+import { Response } from 'express';
 
 import { AppLogger } from '@/infra/logging/app-logger.service';
 
@@ -25,7 +26,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
    */
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+    const response = ctx.getResponse<Response>();
     const status = exception instanceof HttpException ? exception.getStatus() : 500;
 
     let errMessage = exception.response;
