@@ -2,6 +2,7 @@ import { makeProductFactory } from 'test/factories/make-product.factory';
 import { InMemoryProductsRepository } from 'test/repositories/in-memory-products.repository';
 
 import { ID } from '@/core/entities/id';
+import { Product } from '@/domain/enterprise/entities/product';
 
 import { InvalidProductIdError } from '../errors/invalid-product-id.error';
 import { FindProductByIdUseCase } from './find-product-by-id-use-case';
@@ -39,12 +40,39 @@ suite('[Product][UseCase]', () => {
       expect(result.isRight()).toBeTruthy();
       assert(result.isRight()); // TypeScript now knows that result is Right
 
-      expect(result.value.product.id.isValid()).toBeTruthy();
-      expect(result.value.product.title).toBe(newProduct.title);
-      expect(result.value.product.description).toBe(newProduct.description);
-      expect(result.value.product.ownerId.toValue()).toBe(newProduct.ownerId.toValue());
-      expect(result.value.product.price.amount).toBe(newProduct.price.amount);
+      // Sem `filters`, o contrato de `FindProductByIdUseCase` garante o
+      // `Product` completo (ver find-product-by-id-use-case.ts).
+      const product = result.value.product as Product;
+
+      expect(product.id.isValid()).toBeTruthy();
+      expect(product.title).toBe(newProduct.title);
+      expect(product.description).toBe(newProduct.description);
+      expect(product.ownerId.toValue()).toBe(newProduct.ownerId.toValue());
+      expect(product.price.amount).toBe(newProduct.price.amount);
       expect(productsRepository.items).toHaveLength(1);
+    });
+
+    it('should be able to find a product returning only the selected fields', async () => {
+      const newProduct = makeProductFactory({
+        title: 'Jacket',
+        description: 'A nice jacket',
+        price: 1.99,
+      });
+
+      await productsRepository.create(newProduct);
+
+      const result = await sut.execute({
+        id: newProduct.id.toValue(),
+        filters: { title: true },
+      });
+
+      expect(result.isRight()).toBeTruthy();
+      assert(result.isRight());
+
+      expect(result.value.product.id?.toValue()).toBe(newProduct.id.toValue());
+      expect(result.value.product.title).toBe(newProduct.title);
+      expect(result.value.product.description).toBeUndefined();
+      expect(result.value.product.price).toBeUndefined();
     });
 
     it('should throw error finding a product with invalid id', async () => {

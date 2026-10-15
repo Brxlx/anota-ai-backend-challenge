@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
+import { ProductFilters } from '@/core/repositories/product-filters';
 import { ProductsRepository } from '@/domain/application/Product/repositories/products.repository';
 import { Product } from '@/domain/enterprise/entities/product';
 
@@ -16,6 +17,30 @@ export class InMemoryProductsRepository implements ProductsRepository {
     if (!product) return null;
 
     return product;
+  }
+
+  async findByIdPartial(id: string, filters: ProductFilters): Promise<Partial<Product> | null> {
+    const product = this.items.get(id);
+
+    if (!product) return null;
+
+    // `title`, `description`, `price`, `ownerId`, `category`, `createdAt` e
+    // `updatedAt` em `Product` são somente leitura (getters sem setter
+    // correspondente). Além disso, os métodos públicos `setX` mutam a instância
+    // armazenada em `items` e disparam `touch()` — nunca devem ser usados
+    // aqui, já que isto é uma leitura. Por isso o objeto é montado inteiro em
+    // uma única expressão (spread condicional), nunca por atribuição após a
+    // criação.
+    return {
+      id: product.id,
+      ...(filters.title && { title: product.title }),
+      ...(filters.description && { description: product.description }),
+      ...(filters.price && { price: product.price }),
+      ...(filters.ownerId && { ownerId: product.ownerId }),
+      ...(filters.category && { category: product.category }),
+      ...(filters.createdAt && { createdAt: product.createdAt }),
+      ...(filters.updatedAt && { updatedAt: product.updatedAt }),
+    };
   }
 
   async findByTitle(title: string): Promise<Product | null> {

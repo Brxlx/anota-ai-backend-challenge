@@ -6,7 +6,7 @@ import {
 } from '@/infra/http/modules/Product/types/create-product.schema';
 
 import { deleteProductResponseSchema, deleteProductSchema } from './delete-product.schema';
-import { findProductResponseSchema, findProductSchema } from './find-product.schema';
+import { findProductQuerySchema, findProductResponseSchema, findProductSchema } from './find-product.schema';
 import { updateProductResponseSchema, updateProductSchema } from './update-product.schema';
 
 export class CreateProductDTO extends createZodDto(createProductSchema) {}
@@ -16,6 +16,7 @@ export class DeleteProductDTO extends createZodDto(deleteProductSchema) {}
 export class DeleteProductResponseDTO extends createZodDto(deleteProductResponseSchema) {}
 
 export class FindProductDTO extends createZodDto(findProductSchema) {}
+export class FindProductQueryDTO extends createZodDto(findProductQuerySchema) {}
 export class FindProductResponseDTO extends createZodDto(findProductResponseSchema) {}
 
 export class UpdateProductDTO extends createZodDto(updateProductSchema) {}

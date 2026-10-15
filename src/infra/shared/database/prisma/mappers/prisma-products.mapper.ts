@@ -19,6 +19,33 @@ export class PrismaProductsMapper {
     );
   }
 
+  /**
+   * Mapeia um `Product` do Prisma obtido com `select` (projeção parcial de
+   * campos, ver `ProductFilters`) para um `Partial<Product>` de domínio.
+   *
+   * Ao contrário de `toDomain`, não instancia um `Product` completo (o que
+   * exigiria valores padrão artificiais para os campos não selecionados) —
+   * apenas traduz, campo a campo, o que de fato veio do banco. `id` é sempre
+   * obrigatório, pois é ele quem identifica a entidade.
+   */
+  static toDomainPartial(raw: Partial<PrismaProduct> & { id: string }): Partial<Product> & { id: ID } {
+    // `title`, `description`, `price`, `ownerId` e `createdAt` em `Product` são
+    // somente leitura (getters sem setter correspondente — os `setX` públicos
+    // mutam a entidade e disparam `touch()`, o que não se aplica aqui).
+    // Por isso o objeto precisa ser montado inteiro em uma única expressão
+    // (spread condicional), nunca por atribuição após a criação.
+    return {
+      id: new ID(raw.id),
+      ...(raw.title !== undefined && { title: raw.title }),
+      ...(raw.description !== undefined && { description: raw.description }),
+      ...(raw.price !== undefined && { price: Price.createBRL(raw.price) }),
+      ...(raw.ownerId !== undefined && { ownerId: new ID(raw.ownerId) }),
+      ...(raw.categoryId !== undefined && { category: new ID(raw.categoryId) }),
+      ...(raw.createdAt !== undefined && { createdAt: raw.createdAt }),
+      ...(raw.updatedAt !== undefined && { updatedAt: raw.updatedAt }),
+    };
+  }
+
   static toPrisma(product: Product): Prisma.ProductUncheckedCreateInput {
     return {
       id: product.id.toValue(),
