@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '@/../generated/prisma/client';
 import { ProductFilters } from '@/core/repositories/product-filters';
-import { ProductsRepository } from '@/domain/application/Product/repositories/products.repository';
+import {
+  ProductsRepository,
+  ProductUpdateData,
+} from '@/domain/application/Product/repositories/products.repository';
 import { Product } from '@/domain/enterprise/entities/product';
 
 import { PrismaProductsMapper } from '../mappers/prisma-products.mapper';
@@ -60,11 +63,22 @@ export class PrismaProductsRepository implements ProductsRepository {
     return PrismaProductsMapper.toDomain(createdProduct);
   }
 
-  async update(product: Product): Promise<void> {
-    const raw = PrismaProductsMapper.toPrisma(product);
+  async update(product: Product, changes: ProductUpdateData): Promise<void> {
+    // Monta o `data` apenas com os campos que vieram no PATCH (+ `updatedAt`,
+    // que acompanha a entidade). `id` nunca entra aqui: é usado só em `where`
+    // — passá-lo em `data` é rejeitado pelo Prisma ("Unknown argument `id`").
+    const data: Prisma.ProductUncheckedUpdateInput = {
+      ...(changes.title !== undefined && { title: changes.title }),
+      ...(changes.description !== undefined && { description: changes.description }),
+      ...(changes.ownerId !== undefined && { ownerId: changes.ownerId }),
+      ...(changes.price !== undefined && { price: changes.price }),
+      ...(changes.category !== undefined && { categoryId: changes.category }),
+      updatedAt: product.updatedAt ?? undefined,
+    };
+
     await this.prismaService.product.update({
-      where: { id: raw.id },
-      data: raw,
+      where: { id: product.id.toValue() },
+      data,
     });
   }
 

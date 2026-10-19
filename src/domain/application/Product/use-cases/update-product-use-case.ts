@@ -43,7 +43,7 @@ export class UpdateProductUseCase {
       product,
     );
 
-    await this.productsRepository.update(updatedProduct);
+    await this.productsRepository.update(updatedProduct, { title, description, ownerId, price, category });
 
     // Send to queue
     await this.sendProductToQueue(this.queue, 'catalog-emit', updatedProduct);

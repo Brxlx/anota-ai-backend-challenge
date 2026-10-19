@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { ProductFilters } from '@/core/repositories/product-filters';
-import { ProductsRepository } from '@/domain/application/Product/repositories/products.repository';
+import {
+  ProductsRepository,
+  ProductUpdateData,
+} from '@/domain/application/Product/repositories/products.repository';
 import { Product } from '@/domain/enterprise/entities/product';
 
 export class InMemoryProductsRepository implements ProductsRepository {
@@ -56,7 +59,10 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
     return product;
   }
-  async update(product: Product): Promise<void> {
+  // `changes` existe só para espelhar a assinatura de `ProductsRepository`;
+  // o double em memória não distingue persistência parcial de total, então
+  // simplesmente guarda a entidade já atualizada.
+  async update(product: Product, _changes: ProductUpdateData): Promise<void> {
     const id = product.id.toString();
 
     if (this.items.has(id)) {

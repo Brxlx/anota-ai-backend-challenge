@@ -19,7 +19,7 @@ export class UpdateCategoryController {
   @Patch(':id')
   async handle(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(updateCategorySchema.omit({ id: true }))) body: Omit<UpdateCategoryDTO, 'id'>,
+    @Body(new ZodValidationPipe(updateCategorySchema)) body: UpdateCategoryDTO,
   ) {
     const result = await this.updateCategoryService.execute(id, {
       title: body.title,

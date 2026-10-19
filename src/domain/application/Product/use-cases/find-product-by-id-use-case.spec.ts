@@ -41,7 +41,7 @@ suite('[Product][UseCase]', () => {
       assert(result.isRight()); // TypeScript now knows that result is Right
 
       // Sem `filters`, o contrato de `FindProductByIdUseCase` garante o
-      // `Product` completo (ver find-product-by-id-use-case.ts).
+      // `Product` completo.
       const product = result.value.product as Product;
 
       expect(product.id.isValid()).toBeTruthy();

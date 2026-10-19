@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { CategoriesRepository } from '@/domain/application/Category/repositories/categories.repository';
+import {
+  CategoriesRepository,
+  CategoryUpdateData,
+} from '@/domain/application/Category/repositories/categories.repository';
 import { Category } from '@/domain/enterprise/entities/category';
 
 export class InMemoryCategoriesRepository implements CategoriesRepository {
@@ -30,7 +33,10 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
 
     return category;
   }
-  async update(category: Category): Promise<void> {
+  // `changes` existe só para espelhar a assinatura de `CategoriesRepository`;
+  // o double em memória não distingue persistência parcial de total, então
+  // simplesmente guarda a entidade já atualizada.
+  async update(category: Category, _changes: CategoryUpdateData): Promise<void> {
     const id = category.id.toString();
 
     if (this.items.has(id)) {

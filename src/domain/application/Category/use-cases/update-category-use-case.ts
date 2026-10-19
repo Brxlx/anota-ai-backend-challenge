@@ -43,7 +43,7 @@ export class UpdateCategoryUseCase {
 
     if (ownerId !== undefined) category.setOwnerId(new ID(ownerId));
 
-    await this.categoriesRepository.update(category);
+    await this.categoriesRepository.update(category, { title, description, ownerId });
 
     // Send message to the queue
     await GatewayUtils.sendCategoryMessageToQueue(this.queue, 'catalog-emit', category);

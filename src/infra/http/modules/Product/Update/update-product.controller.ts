@@ -19,7 +19,7 @@ export class UpdateProductController {
   @Patch(':id')
   async handle(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(updateProductSchema.omit({ id: true }))) body: Omit<UpdateProductDTO, 'id'>,
+    @Body(new ZodValidationPipe(updateProductSchema)) body: UpdateProductDTO,
   ) {
     const result = await this.updateProductService.execute(id, {
       title: body.title,

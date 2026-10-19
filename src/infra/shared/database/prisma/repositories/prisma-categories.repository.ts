@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { CategoriesRepository } from '@/domain/application/Category/repositories/categories.repository';
+import { Prisma } from '@/../generated/prisma/client';
+import {
+  CategoriesRepository,
+  CategoryUpdateData,
+} from '@/domain/application/Category/repositories/categories.repository';
 import { Category } from '@/domain/enterprise/entities/category';
 
 import { PrismaCategoriesMapper } from '../mappers/prisma-categories.mapper';
@@ -47,11 +51,20 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
 
     return PrismaCategoriesMapper.toDomain(createdCategory);
   }
-  async update(category: Category): Promise<void> {
-    const raw = PrismaCategoriesMapper.toPrisma(category);
+  async update(category: Category, changes: CategoryUpdateData): Promise<void> {
+    // Monta o `data` apenas com os campos que vieram no PATCH (+ `updatedAt`,
+    // que acompanha a entidade). `id` nunca entra aqui: é usado só em `where`
+    // — passá-lo em `data` é rejeitado pelo Prisma ("Unknown argument `id`").
+    const data: Prisma.CategoryUncheckedUpdateInput = {
+      ...(changes.title !== undefined && { title: changes.title }),
+      ...(changes.description !== undefined && { description: changes.description }),
+      ...(changes.ownerId !== undefined && { ownerId: changes.ownerId }),
+      updatedAt: category.updatedAt ?? undefined,
+    };
+
     await this.prismaService.category.update({
-      where: { id: raw.id },
-      data: raw,
+      where: { id: category.id.toValue() },
+      data,
     });
   }
   async delete(categoryId: string): Promise<void> {
