@@ -13,7 +13,10 @@ import { UpdateProductService } from './update-product.service';
 export class UpdateProductController {
   constructor(private readonly updateProductService: UpdateProductService) {}
 
-  @ApiOperation({ summary: 'update a product by id' })
+  @ApiOperation({
+    summary: 'update a product by id',
+    description: 'update some product fields. Fields are in body example',
+  })
   @ZodResponse({ type: UpdateProductResponseDTO, status: HttpStatus.OK })
   @HttpCode(HttpStatus.OK)
   @Patch(':id')

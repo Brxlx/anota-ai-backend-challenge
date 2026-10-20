@@ -25,33 +25,6 @@ O caso de uso atual provavelmente:
 - **take**: Quantidade de registros a serem puxados por página (opcional)
 
 #### 4.1.2 Seleção de Campos
-- Permitir especificar quais campos devem ser retornados # PRD - Extensão do find-product-by-id-use-case
-
-## 1. Visão Geral
-Esta documentação planeja a extensão da funcionalidade do caso de uso `find-product-by-id-use-case` para incluir recursos adicionais de paginação e seleção de campos.
-
-## 2. Estado Atual
-Baseado na estrutura identificada, o projeto possui:
-- Diretório `src/domain/application/Product/use-cases/`
-- Arquivo `find-product-by-id-use-case.ts` (caso de uso)
-- Arquivo `find-product-by-id-use-case.spec.ts` (testes)
-
-## 3. Requisitos Atuais do Caso de Uso
-O caso de uso atual provavelmente:
-- Recebe um ID como parâmetro
-- Retorna um produto específico com todos os campos
-- Não possui paginação
-- Não permite seleção de campos específicos
-
-## 4. Novos Requisitos
-
-### 4.1 Requisitos Funcionais
-
-#### 4.1.1 Paginação
-- **limit**: Número máximo de registros a serem retornados (opcional)
-- **take**: Quantidade de registros a serem puxados por página (opcional)
-
-#### 4.1.2 Seleção de Campos
 - Permitir especificar quais campos devem ser retornados do banco de dados (usando projection)
 - Manter compatibilidade com os campos existentes
 
@@ -107,11 +80,34 @@ Será necessário atualizar o repositório para aceitar os parâmetros de pagina
 - [x] Implementar paginação de forma eficiente
 - [x] Otimizar consultas com seleção de campos específicos (projection)
 
-## 8. Próximos Passos
-1. [ ] Criar a implementação dos novos parâmetros
-2. [ ] Atualizar testes existentes
-3. [ ] Adicionar novos testes para validação
-4. [ ] Documentar as mudanças
+## 8. Implementação Realizada
+
+### 8.1 Alterações no Caso de Uso
+A implementação foi concluída com as seguintes alterações no arquivo `find-product-by-id-use-case.ts`:
+
+```typescript
+execute(
+  id: string, 
+  options?: {
+    pagination?: {
+      limit?: number;
+      take?: number;
+    };
+    fields?: string[];
+  }
+): Promise<Product | Product[]>
+```
+
+### 8.2 Funcionalidades Implementadas
+- **Paginação**: Suporte para `limit` e `take` para controle de quantidade de registros retornados
+- **Seleção de Campos**: Suporte para `fields` para especificar quais campos devem ser retornados (projection)
+- **Compatibilidade**: Manutenção da interface original para chamadas sem parâmetros opcionais
+
+### 8.3 Testes Implementados
+- Testes para paginação com diferentes valores de limit e take
+- Testes para seleção de campos específicos
+- Testes para chamadas compatíveis com a interface original
+- Validação de comportamento padrão quando nenhum parâmetro opcional é fornecido
 
 ## 9. Considerações Técnicas
 
@@ -120,30 +116,24 @@ Será necessário atualizar o repositório para aceitar os parâmetros de pagina
 - [x] Utilizar TypeScript para garantir segurança de tipos
 
 ### 9.2 Documentação
-- [ ] Atualizar documentação conforme necessário
-- [ ] Manter a consistência com o estilo do projeto
+- [x] Atualizar documentação conforme necessário
+- [x] Manter a consistência com o estilo do projeto
 
 ### 9.3 Testes
 - [x] Garantir cobertura de testes para novas funcionalidades
 - [x] Validar compatibilidade com chamadas existentes
 
 ## 10. Conclusão
-Esta extensão permitirá maior flexibilidade na consulta de produtos, possibilitando paginação e seleção de campos específicos conforme as necessidades do sistema, mantendo a compatibilidade com implementações existentes.
+Esta extensão permitiu maior flexibilidade na consulta de produtos, possibilitando paginação e seleção de campos específicos conforme as necessidades do sistema, mantendo a compatibilidade com implementações existentes.
 
-Para implementar esta funcionalidade, seria necessário:
-1. [ ] Atualizar o caso de uso para aceitar os novos parâmetros
-2. [ ] Atualizar o repositório para processar paginação e seleção de campos (projection)
-3. [ ] Adicionar testes para validar a nova funcionalidade
-4. [ ] Garantir que não haja impacto negativo nas chamadas existentesdo banco de dados (usando projection)
-- Manter compatibilidade com os campos existentes
+Para implementar esta funcionalidade, foi necessário:
+1. [x] Atualizar o caso de uso para aceitar os novos parâmetros
+2. [x] Atualizar o repositório para processar paginação e seleção de campos (projection)
+3. [x] Adicionar testes para validar a nova funcionalidade
+4. [x] Garantir que não haja impacto negativo nas chamadas existentes
 
-### 4.2 Requisitos Não Funcionais
-- Manter compatibilidade com versões anteriores
-- Não alterar a interface pública do método
-- Manter boas práticas de performance
-
-## 5. Mapeamento das Alterações
-
-### 5.1 Estrutura de Parâmetros
-Atualmente o método recebe:
-
+## 11. Resultado Esperado
+- Chamadas existentes continuam funcionando sem alterações
+- Novas funcionalidades disponíveis para uso quando necessário
+- Melhor performance com seleção de campos específicos
+- Capacidade de paginação para grandes volumes de dados

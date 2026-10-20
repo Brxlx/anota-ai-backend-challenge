@@ -7,6 +7,7 @@ import {
 
 import { deleteProductResponseSchema, deleteProductSchema } from './delete-product.schema';
 import { findProductQuerySchema, findProductResponseSchema, findProductSchema } from './find-product.schema';
+import { listProductQuerySchema, listProductResponseSchema } from './find-products.schema';
 import { updateProductResponseSchema, updateProductSchema } from './update-product.schema';
 
 export class CreateProductDTO extends createZodDto(createProductSchema) {}
@@ -18,6 +19,9 @@ export class DeleteProductResponseDTO extends createZodDto(deleteProductResponse
 export class FindProductDTO extends createZodDto(findProductSchema) {}
 export class FindProductQueryDTO extends createZodDto(findProductQuerySchema) {}
 export class FindProductResponseDTO extends createZodDto(findProductResponseSchema) {}
+
+export class ListProductQueryDTO extends createZodDto(listProductQuerySchema) {}
+export class ListProductResponseDTO extends createZodDto(listProductResponseSchema) {}
 
 export class UpdateProductDTO extends createZodDto(updateProductSchema) {}
 export class UpdateProductResponseDTO extends createZodDto(updateProductResponseSchema) {}

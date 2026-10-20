@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '@/../generated/prisma/client';
+import { PaginatedResult, PaginationParams } from '@/core/repositories/pagination-params';
 import { ProductFilters } from '@/core/repositories/product-filters';
 import {
   ProductsRepository,
@@ -11,9 +12,47 @@ import { Product } from '@/domain/enterprise/entities/product';
 import { PrismaProductsMapper } from '../mappers/prisma-products.mapper';
 import { PrismaService } from '../prisma.service';
 
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
 @Injectable()
 export class PrismaProductsRepository implements ProductsRepository {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async findManyPartial(
+    { cursor, limit = DEFAULT_LIMIT }: PaginationParams,
+    filters: ProductFilters,
+  ): Promise<PaginatedResult<Partial<Product>>> {
+    const take = Math.min(limit, MAX_LIMIT);
+
+    // Tipado explicitamente como `Prisma.ProductFindManyArgs` (em vez de
+    // inferido por `cursor ? {...} : {}`) para evitar que o TS trate isso
+    // como um tipo união ao espalhar no literal de `findMany` abaixo —
+    // união essa que o Prisma rejeita, por sua assinatura ser acoplada ao
+    // shape exato de `select`/`cursor` para inferir o retorno.
+    const baseArgs: Prisma.ProductFindManyArgs = {
+      take: take + 1,
+      orderBy: { id: 'asc' },
+    };
+
+    if (cursor) {
+      baseArgs.cursor = { id: cursor };
+      baseArgs.skip = 1;
+    }
+
+    if (filters) {
+      const products = await this.prismaService.product.findMany({
+        ...baseArgs,
+        select: this.buildSelect(filters),
+      });
+
+      return this.buildPaginatedResult(products, take, PrismaProductsMapper.toDomainPartial);
+    }
+
+    const products = await this.prismaService.product.findMany(baseArgs);
+
+    return this.buildPaginatedResult(products, take, PrismaProductsMapper.toDomain);
+  }
 
   async findAll(): Promise<Product[]> {
     const products = await this.prismaService.product.findMany();
@@ -108,6 +147,25 @@ export class PrismaProductsRepository implements ProductsRepository {
       categoryId: filters.category,
       createdAt: filters.createdAt,
       updatedAt: filters.updatedAt,
+    };
+  }
+
+  /**
+   * Corta o item extra buscado em `take + 1` para derivar `nextCursor` sem
+   * uma segunda query (`count`/outro `findMany`). Compartilhado pelos dois
+   * ramos (projeção completa e parcial) de `findManyPaginated`.
+   */
+  private buildPaginatedResult<T extends { id: string }, R>(
+    rows: T[],
+    take: number,
+    toDomain: (row: T) => R,
+  ): PaginatedResult<R> {
+    const hasNextPage = rows.length > take;
+    const page = hasNextPage ? rows.slice(0, -1) : rows;
+
+    return {
+      items: page.map(toDomain),
+      nextCursor: hasNextPage ? page[page.length - 1].id : null,
     };
   }
 }

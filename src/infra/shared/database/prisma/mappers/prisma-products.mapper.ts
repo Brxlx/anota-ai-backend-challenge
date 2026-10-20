@@ -28,7 +28,10 @@ export class PrismaProductsMapper {
    * apenas traduz, campo a campo, o que de fato veio do banco. `id` é sempre
    * obrigatório, pois é ele quem identifica a entidade.
    */
-  static toDomainPartial(raw: Partial<PrismaProduct> & { id: string }): Partial<Product> & { id: ID } {
+  static toDomainPartial(
+    this: void,
+    raw: Partial<PrismaProduct> & { id: string },
+  ): Partial<Product> & { id: ID } {
     // `title`, `description`, `price`, `ownerId` e `createdAt` em `Product` são
     // somente leitura (getters sem setter correspondente — os `setX` públicos
     // mutam a entidade e disparam `touch()`, o que não se aplica aqui).

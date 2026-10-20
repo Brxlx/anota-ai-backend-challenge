@@ -3,7 +3,7 @@ import { INestApplication, Logger } from '@nestjs/common';
 import { prefixedLogger } from '../helpers/prefixed-logger';
 import { Env } from '../shared/env/env.schema';
 import { EnvService } from '../shared/env/env.service';
-import { Swagger } from './Swagger';
+import { OpenApi } from './Swagger';
 
 export class App {
   private app: INestApplication;
@@ -24,7 +24,7 @@ export class App {
   }
 
   private loadSwaggerApi() {
-    return Swagger.run(this.app);
+    return this.nodeEnv !== 'prod' && OpenApi.run(this.app);
   }
 
   private async runApp() {

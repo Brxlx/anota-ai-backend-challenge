@@ -10,6 +10,8 @@ import { DeleteProductByIdController } from './Delete/delete-product.controller'
 import { DeleteProductByIdService } from './Delete/delete-product.service';
 import { FindProductByIdController } from './Find/find-product.controller';
 import { FindProductByIdService } from './Find/find-product.service';
+import { ListProductsController } from './List/list-products.controller';
+import { ListProductsService } from './List/list-products.service';
 import { UpdateProductController } from './Update/update-product.controller';
 import { UpdateProductService } from './Update/update-product.service';
 
@@ -19,9 +21,22 @@ import { UpdateProductService } from './Update/update-product.service';
     CreateProductController,
     DeleteProductByIdController,
     FindProductByIdController,
+    ListProductsController,
     UpdateProductController,
   ],
-  providers: [CreateProductService, DeleteProductByIdService, FindProductByIdService, UpdateProductService],
-  exports: [CreateProductService, DeleteProductByIdService, FindProductByIdService, UpdateProductService],
+  providers: [
+    CreateProductService,
+    DeleteProductByIdService,
+    FindProductByIdService,
+    ListProductsService,
+    UpdateProductService,
+  ],
+  exports: [
+    CreateProductService,
+    DeleteProductByIdService,
+    FindProductByIdService,
+    ListProductsService,
+    UpdateProductService,
+  ],
 })
 export class ProductModule {}

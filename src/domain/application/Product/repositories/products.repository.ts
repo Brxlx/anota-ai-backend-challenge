@@ -1,3 +1,4 @@
+import { PaginatedResult, PaginationParams } from '@/core/repositories/pagination-params';
 import { ProductFilters } from '@/core/repositories/product-filters';
 import { Product } from '@/domain/enterprise/entities/product';
 
@@ -17,6 +18,10 @@ export interface ProductUpdateData {
 
 export abstract class ProductsRepository {
   abstract findAll(): Promise<Product[]>;
+  abstract findManyPartial(
+    pagination: PaginationParams,
+    filters: ProductFilters,
+  ): Promise<PaginatedResult<Partial<Product>>>;
   abstract findById(id: string): Promise<Product | null>;
   abstract findByIdPartial(id: string, filters: ProductFilters): Promise<Partial<Product> | null>;
   abstract findByTitle(title: string): Promise<Product | null>;

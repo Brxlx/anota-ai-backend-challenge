@@ -5,7 +5,7 @@ import { cleanupOpenApiDoc } from 'nestjs-zod';
 
 import { version } from '@/../package.json';
 
-export class Swagger {
+export class OpenApi {
   public static run(app: INestApplication) {
     const config = new DocumentBuilder()
       .setTitle('Anota Aí API')

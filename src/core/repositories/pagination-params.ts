@@ -1,4 +1,9 @@
 export interface PaginationParams {
-  page?: number;
-  itemsPerPage?: number;
+  cursor?: string;
+  limit?: number;
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  nextCursor: string | null;
 }

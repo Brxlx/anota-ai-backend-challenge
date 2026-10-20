@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
+import { PaginatedResult, PaginationParams } from '@/core/repositories/pagination-params';
 import { ProductFilters } from '@/core/repositories/product-filters';
 import {
   ProductsRepository,
@@ -6,12 +7,43 @@ import {
 } from '@/domain/application/Product/repositories/products.repository';
 import { Product } from '@/domain/enterprise/entities/product';
 
+const DEFAULT_LIMIT = 20;
+
 export class InMemoryProductsRepository implements ProductsRepository {
   // public items: Product[] = [];
   public items = new Map<string, Product>();
 
   async findAll(): Promise<Product[]> {
     return Array.from(this.items.values());
+  }
+
+  async findManyPartial(
+    { cursor, limit = DEFAULT_LIMIT }: PaginationParams,
+    filters: ProductFilters,
+  ): Promise<PaginatedResult<Product | Partial<Product>>> {
+    const sorted = Array.from(this.items.values()).sort((a, b) =>
+      a.id.toValue().localeCompare(b.id.toValue()),
+    );
+
+    let startIndex = 0;
+
+    if (cursor) {
+      const cursorIndex = sorted.findIndex((product) => product.id.toValue() === cursor);
+
+      if (cursorIndex === -1) {
+        throw new Error('Cursor not found');
+      }
+
+      startIndex = cursorIndex + 1;
+    }
+
+    const page = sorted.slice(startIndex, startIndex + limit);
+    const hasNextPage = startIndex + limit < sorted.length;
+
+    return {
+      items: filters ? page.map((product) => this.toPartial(product, filters)) : page,
+      nextCursor: hasNextPage ? page[page.length - 1].id.toValue() : null,
+    };
   }
 
   async findById(id: string): Promise<Product | null> {
@@ -71,5 +103,18 @@ export class InMemoryProductsRepository implements ProductsRepository {
   }
   async delete(productId: string): Promise<void> {
     this.items.delete(productId);
+  }
+
+  private toPartial(product: Product, filters: ProductFilters): Partial<Product> {
+    return {
+      id: product.id,
+      ...(filters.title && { title: product.title }),
+      ...(filters.description && { description: product.description }),
+      ...(filters.price && { price: product.price }),
+      ...(filters.ownerId && { ownerId: product.ownerId }),
+      ...(filters.category && { category: product.category }),
+      ...(filters.createdAt && { createdAt: product.createdAt }),
+      ...(filters.updatedAt && { updatedAt: product.updatedAt }),
+    };
   }
 }
