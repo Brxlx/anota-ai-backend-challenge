@@ -19,7 +19,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
   async findManyPartial(
     { cursor, limit = DEFAULT_LIMIT }: PaginationParams,
-    filters: ProductFilters,
+    filters?: ProductFilters,
   ): Promise<PaginatedResult<Product | Partial<Product>>> {
     const sorted = Array.from(this.items.values()).sort((a, b) =>
       a.id.toValue().localeCompare(b.id.toValue()),

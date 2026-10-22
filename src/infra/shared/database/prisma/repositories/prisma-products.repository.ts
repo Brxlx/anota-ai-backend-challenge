@@ -21,7 +21,7 @@ export class PrismaProductsRepository implements ProductsRepository {
 
   async findManyPartial(
     { cursor, limit = DEFAULT_LIMIT }: PaginationParams,
-    filters: ProductFilters,
+    filters?: ProductFilters,
   ): Promise<PaginatedResult<Partial<Product>>> {
     const take = Math.min(limit, MAX_LIMIT);
 

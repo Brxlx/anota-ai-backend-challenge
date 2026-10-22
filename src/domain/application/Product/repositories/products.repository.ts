@@ -20,7 +20,7 @@ export abstract class ProductsRepository {
   abstract findAll(): Promise<Product[]>;
   abstract findManyPartial(
     pagination: PaginationParams,
-    filters: ProductFilters,
+    filters?: ProductFilters,
   ): Promise<PaginatedResult<Partial<Product>>>;
   abstract findById(id: string): Promise<Product | null>;
   abstract findByIdPartial(id: string, filters: ProductFilters): Promise<Partial<Product> | null>;

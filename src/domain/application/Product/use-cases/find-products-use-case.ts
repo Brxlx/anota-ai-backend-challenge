@@ -36,7 +36,7 @@ export class FindProductsUseCase {
     filters,
   }: ListProductsUseCaseRequest): Promise<FindProductsUseCaseResponse> {
     try {
-      const result = await this.productsRepository.findManyPartial({ cursor, limit }, filters ?? {});
+      const result = await this.productsRepository.findManyPartial({ cursor, limit }, filters);
 
       return right(result);
     } catch {
