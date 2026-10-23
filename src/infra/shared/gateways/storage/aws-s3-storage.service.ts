@@ -23,11 +23,11 @@ export class AwsS3StorageService implements Storage {
     this.logger = new Logger(AwsS3StorageService.name);
 
     this.s3 = new S3Client({
-      region: this.envService.get('DATABASE_URL'),
-      endpoint: this.envService.get('DATABASE_URL'),
+      region: this.envService.get('AWS_REGION'),
+      endpoint: this.envService.get('AWS_S3_ENDPOINT'),
       credentials: {
-        accessKeyId: 'fake-access-key',
-        secretAccessKey: 'fake-secret-key',
+        accessKeyId: this.envService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.envService.get('AWS_SECRET_ACCESS_KEY'),
       },
     });
     this.bucket = this.envService.get('AWS_S3_BUCKET');

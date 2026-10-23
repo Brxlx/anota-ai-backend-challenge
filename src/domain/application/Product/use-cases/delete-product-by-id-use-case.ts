@@ -3,13 +3,14 @@ import { Product } from '@/domain/enterprise/entities/product';
 
 import { Queue } from '../../shared/gateways/queue.gateway';
 import { InvalidProductIdError } from '../errors/invalid-product-id.error';
+import { ProductIdNotFoundError } from '../errors/product-id-not-found.error';
 import { ProductsRepository } from '../repositories/products.repository';
 
 interface DeleteProductUseCaseRequest {
   id: string;
 }
 
-type DeleteProductUseCaseResponse = Either<InvalidProductIdError, Product[]>;
+type DeleteProductUseCaseResponse = Either<InvalidProductIdError | ProductIdNotFoundError, Product[]>;
 
 export class DeleteProductByIdUseCase {
   constructor(
@@ -22,7 +23,7 @@ export class DeleteProductByIdUseCase {
 
     const findInDb = await this.productsRepository.findById(id);
 
-    if (!findInDb) return left(new Error('Id not found'));
+    if (!findInDb) return left(new ProductIdNotFoundError());
 
     await this.productsRepository.delete(id);
 

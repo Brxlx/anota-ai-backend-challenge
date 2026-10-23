@@ -1,6 +1,6 @@
+import { Prisma } from '@generated/prisma/client';
 import { Injectable } from '@nestjs/common';
 
-import { Prisma } from '@/../generated/prisma/client';
 import {
   CategoriesRepository,
   CategoryUpdateData,

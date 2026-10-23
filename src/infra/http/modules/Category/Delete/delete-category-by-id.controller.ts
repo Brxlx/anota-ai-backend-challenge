@@ -10,7 +10,7 @@ import { DeleteCategoryByIdService } from './delete-category.service';
 
 @ApiTags('Category')
 @Controller('/categories')
-export class DeleteCategoryByIdCategoryController {
+export class DeleteCategoryByIdController {
   constructor(private readonly deleteCategoryByIdService: DeleteCategoryByIdService) {}
 
   @ApiOperation({ summary: 'delete a category by id' })

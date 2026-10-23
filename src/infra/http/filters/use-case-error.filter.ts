@@ -2,12 +2,14 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Injec
 import { Response } from 'express';
 
 import { CategoryAlreadyExistsError } from '@/domain/application/Category/errors/category-already-exists.error';
+import { CategoryIdNotFoundError } from '@/domain/application/Category/errors/category-id-not-found.error';
 import { InvalidCategoryIdError } from '@/domain/application/Category/errors/invalid-category-id.error';
 import { InvalidCategoryOwnerIdError } from '@/domain/application/Category/errors/invalid-category-owner-id.error';
 import { ConsumingFromQueueError } from '@/domain/application/Product/errors/consuming-from-queue.error';
 import { InvalidProductIdError } from '@/domain/application/Product/errors/invalid-product-id.error';
 import { InvalidProductOwnerIdError } from '@/domain/application/Product/errors/invalid-product-owner-id.error';
 import { ProductAlreadyExistsError } from '@/domain/application/Product/errors/product-already-exists.error';
+import { ProductIdNotFoundError } from '@/domain/application/Product/errors/product-id-not-found.error';
 import { SendToQueueError } from '@/domain/application/Product/errors/send-to-queue.error';
 import { SendToStorageError } from '@/domain/application/Product/errors/send-to-storage.error';
 import { NegativeAmountError } from '@/domain/enterprise/entities/value-objects/errors/negtive-amount.error';
@@ -40,6 +42,8 @@ export class UseCaseErrorFilter implements ExceptionFilter {
     [InvalidCategoryOwnerIdError.name, HttpStatus.BAD_REQUEST],
     [ConsumingFromQueueError.name, HttpStatus.GATEWAY_TIMEOUT],
     [InvalidProductIdError.name, HttpStatus.BAD_REQUEST],
+    [ProductIdNotFoundError.name, HttpStatus.NOT_FOUND],
+    [CategoryIdNotFoundError.name, HttpStatus.NOT_FOUND],
     [InvalidProductOwnerIdError.name, HttpStatus.BAD_REQUEST],
     [ProductAlreadyExistsError.name, HttpStatus.UNPROCESSABLE_ENTITY],
     [SendToQueueError.name, HttpStatus.SERVICE_UNAVAILABLE],

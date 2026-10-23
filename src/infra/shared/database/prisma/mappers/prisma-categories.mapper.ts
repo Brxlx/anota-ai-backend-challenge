@@ -1,4 +1,5 @@
-import { Category as PrismaCategory, Prisma } from '@/../generated/prisma/client';
+import { Category as PrismaCategory, Prisma } from '@generated/prisma/client';
+
 import { ID } from '@/core/entities/id';
 import { Category } from '@/domain/enterprise/entities/category';
 
